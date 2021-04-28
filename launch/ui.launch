@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+
+  <node pkg="cnr_configuration_manager" type="configuration_user_interface" name="configuration_user_interface" output="screen"/>
+
+</launch>
+
