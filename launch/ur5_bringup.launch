@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="debug" default="false" doc="Debug flag that will get passed on to ur_common.launch"/>
+  <arg name="use_rviz" default="true" />
+  <arg name="plot_traj" default="true" />
+
+
+  <include file="$(find ur5_bringup)/launch/planning_context.launch" >
+    <arg name="load_robot_description" value="true" />
+  </include>
+
+  <!-- Convert joint states to /tf tranforms -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+
+  <arg unless="$(arg debug)" name="launch_prefix" value="" />
+  <arg     if="$(arg debug)" name="launch_prefix"
+  value="gdb --ex run --args" />
+
+  <node launch-prefix="$(arg launch_prefix)"
+        pkg="cnr_configuration_manager"
+        type="cnr_configuration_manager_node"
+        name="configuration_manager" output="screen">
+
+    <rosparam>
+      appenders: [screen,file]
+      levels: [info,info]
+      file_name: "aaa"
+      append_to_file: true
+      pattern_layout: "[%5p][%d{HH:mm:ss,SSS}][%M:%04L][%c] %m%n"
+    </rosparam>
+
+    <rosparam command="load" file="$(find ur5_bringup)/config/configurations.yaml" />
+  </node>
+
+  <rosparam command="load" file="$(find ur5_bringup)/config/ur5_hw.yaml" />
+
+  <node pkg="cnr_configuration_manager" type="dispatcher" name="configuration_dispatcher" output="screen" >
+    <rosparam>
+      appenders: [screen]
+      levels: [info]
+      file_name: "bbb"
+      pattern_layout: "[%5p][%d{HH:mm:ss,SSS}][%M:%04L][%c] %m%n"
+    </rosparam>
+    <param name="num_worker_threads" value="40" />
+    <remap from="~configuration_dispatches" to="/configuration_manager/configuration_dispatches" />
+  </node>
+
+
+  <!-- Run Rviz and load the default config to see the state of the move_group node -->
+  <include file="$(find ur5_lab_moveit)/launch/moveit_rviz.launch" if="$(arg use_rviz)">
+    <arg name="rviz_config" value="$(find ur5_lab_moveit)/launch/moveit.rviz"/>
+    <arg name="debug" value="$(arg debug)"/>
+  </include>
+
+  <include file="$(find ur5_lab_moveit)/launch/move_group.launch">
+    <arg name="allow_trajectory_execution" value="true"/>
+    <arg name="load_robot_description" value="false"/>
+  </include>
+
+    <node name="ft_sensor" pkg="robotiq_ft_sensor" type="rq_sensor" args="/dev/ttyUSB0" />
+
+    <include file="$(find traj_plotter)/launch/traj_plotter.launch" if="$(arg plot_traj)"/>
+
+
+</launch>

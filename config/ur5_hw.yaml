@@ -1,0 +1,221 @@
+ur_hw:
+  type: cnr_ur_driver/UrCB3HardwareInterface
+  appenders: [file, screen]
+  levels: [info, info]
+  pattern_layout: "[%5p][%d{HH:mm:ss,SSS}][%M:%L][%c] %m%n"
+  file_name: "ur_hw"
+  default_throttle_time: 20.0
+  sampling_period: 0.008
+  joints: 
+  - ur5_shoulder_pan_joint
+  - ur5_shoulder_lift_joint
+  - ur5_elbow_joint
+  - ur5_wrist_1_joint
+  - ur5_wrist_2_joint
+  - ur5_wrist_3_joint
+
+  joint_names:
+  - ur5_shoulder_pan_joint
+  - ur5_shoulder_lift_joint
+  - ur5_elbow_joint
+  - ur5_wrist_1_joint
+  - ur5_wrist_2_joint
+  - ur5_wrist_3_joint
+
+  robot_ip: 192.168.254.30
+  reverse_port: 50001
+  script_sender_port: 50002
+  tf_prefix: ''
+  headless_mode: false
+  script_file: /home/brontolo/community_ws/src/devices/robots/Universal_Robots_ROS_Driver/ur_robot_driver/resources/ros_control.urscript
+  output_recipe_file: /home/brontolo/community_ws/src/devices/robots/Universal_Robots_ROS_Driver/ur_robot_driver/resources/rtde_output_recipe.txt
+  input_recipe_file: /home/brontolo/community_ws/src/devices/robots/Universal_Robots_ROS_Driver/ur_robot_driver/resources/rtde_input_recipe.txt
+  ext_control_path: /programs/exc.urp
+  use_tool_communication: false
+  tool_voltage: 0
+  tool_parity: 0
+  tool_baud_rate: 115200
+  tool_stop_bits: 1
+  tool_rx_idle_chars: 1.5
+  tool_tx_idle_chars: 3.5
+
+  base_link  : "ur5_base_link"
+  tool_link  : "ur5_ee_link"
+  robot_description_param: /robot_description
+  robot_description_planning_param: /robot_description_planning
+
+  remap_source_args:
+  - "/ur_hw/js_pub/joint_states"
+
+  remap_target_args:
+  - "/joint_states"
+
+  js_pub:
+    type: cnr/control/JointStatePublisher
+    controlled_joints: all
+
+  tf_pub:
+    type: cnr/control/RobotStateController
+    controlled_joints: all
+    frames: ["ur5_base_link", "ur5_ee_link", "ur5_forearm_link", "ur5_shoulder_link", "ur5_upper_arm_link", "ur5_wrist_1_link", "ur5_wrist_2_link", "ur5_wrist_3_link"]
+
+       
+  jjog:
+    type: "cnr/control/JointTeleopController"
+    controlled_joints: all
+
+  gt_xyz:
+    type: cnr/control/GtTrajDeformationXYZ
+    controlled_joints: all
+    exponential: 4
+    min_val: 29
+
+    Q_hat: [50, 50, 50, 1, 1, 1]
+    R_hat: [1 ,  1,  1, 0, 0, 0]
+    Qr   : [20, 20, 20, 1, 1, 1]
+    Rr   : [ 0,  0,  0, 1, 1, .5]
+
+    M_r: [6,6,6,1,1,1]
+    K_r: [0,0,6,0,0,0]
+    D_r: [25,25,1.5,1,1,1]
+    damping_is_ratio: false
+
+    robot_base_frame: ur5_base_link
+    robot_tip_frame: ur5_tool0
+    force_sensor_frame: robotiq_ft_frame_id
+
+    wrench_deadband: [3,3,3,5,5,5]
+    omega_wrench: 150
+    use_filtered_wrench: true
+
+    rho: 0
+    rho: 0.25
+    omega: 0.3
+    sigmoid_width: 3
+    sigmoid_half_x: 2
+    sigmoid_height: 0.98
+    sigmoid_max_y: 0.99
+    #sigmoid_height: 0
+    #sigmoid_max_y: .99
+
+  var_imp:
+    type: cnr/control/VariableImpedanceCtrl
+    controlled_joints: all
+    exponential: 2
+    min_val: 29
+    sampling_period: 0.008
+
+    M_r: [6,6,6,1,1,1]
+    K_r: [0,0,6,0,0,0]
+    #D_r: [25,25,1.5,1,1,1]
+    D_r: [60,60,1.5,1,1,1]
+    damping_is_ratio: false
+
+    robot_base_frame: ur5_base_link
+    robot_tip_frame: ur5_tool0
+    force_sensor_frame: robotiq_ft_frame_id
+
+    wrench_deadband: [3,3,3,5,5,5]
+    omega_wrench: 150
+    use_filtered_wrench: true
+
+    rho: 0
+    #rho: 0.5
+    omega: 0.5
+    sigmoid_width: 3
+    sigmoid_half_x: 2
+    sigmoid_height: 0.9
+    sigmoid_max_y: 0.95
+    #sigmoid_height: 0
+    #sigmoid_max_y: .95
+    
+  cart_impedance_controller:
+    # REQUIRED:
+    type                  : "cnr_control/CartImpedanceController"
+    inertia               : [ 10, 10, 10, 10, 10, 10]      # in [kg, kg, kg, kg*m^2, kg*m^2, kg*m^2]
+    stiffness             : [1200,800,1200, 120,120,120]   # in [N/m, N/m, N/m, Nm/rad, Nm/rad, Nm/rad]
+    damping               : [120,120,120, 120,120,120]     # in [N/(m/s), N/(m/s), N/(m/s), Nm/(rad/s), Nm/rad/s), Nm/rad/s)]
+    joint_target_topic    : /joint_pos_target              # setpoint joint topic name
+    base_frame            : ur5_base_link                  # name of the base link
+    tool_frame            : ur5_tool0                      # name of the tool link
+    sensor_frame          : robotiq_ft_frame_id            # name of the sensor link (has to be integral with tool_frame)
+
+    # OPTIONAL: 
+    base_is_reference     : false                          # true: impedance in base_frame, false: impedance in tool_frame [DEFAULT: true]
+    wrench_deadband       : [0.1, 0.1, 0.1, 0.0, 0.0, 0.0] # deadband on the wrench topic [DEFAULT: zero]
+    external_wrench_topic : /robotiq_ft_wrench             # wrench topic name [DEFAULT: ~/external_wrench]
+    controlled_joints     : all
+    damping_ratio         : [1,1,0.8, 1,1,2]               # adimensional damping ratio. NOTE: possibile alternative to speficy damping. If specified, it is used instead of the damping. In this case the stiffness should be positive.
+    
+  joint_impedance_controller:
+    # REQUIRED:
+    type                  : "cnr_control/JointImpedanceController"
+    inertia               : [ 10, 10, 10, 10, 10, 10]      # in [kg*m^2], dimensions should be equal to controlled joints.
+    stiffness             : [1200,800,1200, 120,120,120]   # in [Nm/(rad)], dimensions should be equal to controlled joints.
+    damping               : [120,120,120, 120,120,120]     # in [Nm/(rad/s)], dimensions should be equal to controlled joints.
+    joint_target_topic    : /joint_pos_target              # setpoint joint topic name
+    base_frame            : ur5_base_link                  # name of the base link
+    tool_frame            : ur5_tool0                      # name of the tool link
+    sensor_frame          : robotiq_ft_frame_id            # name of the sensor link (has to be integral with tool_frame). Needed if use_wrench=true
+    use_wrench            : true                           # if true, a wrench topic is subscribed, joint torques are obtained using kinematic chain. if false, a external_torque (in the configuration space) is subscribed.
+
+    # OPTIONAL: 
+    base_is_reference     : false                          # true: impedance in base_frame, false: impedance in tool_frame [DEFAULT: true]
+    torque_deadband       : [0.1, 0.1, 0.1, 0.0, 0.0, 0.0] # deadband on the joint torque [DEFAULT: zero]
+    external_wrench_topic : /robotiq_ft_wrench             # wrench topic name [DEFAULT: ~/external_wrench]
+    external_torques_topic: extra_torques                  # external torque  topic name [DEFAULT: ~/external_torques]
+    controlled_joints     : all                            # controlled joint names, [DEFALT: all the joint of the hardware interface]
+
+  p_j:
+    type: cnr/control/OpenLoopPositionController
+    setpoint_topic_name: /joint_pos_target
+    controlled_joints: all
+
+plan_hw:
+  type: cnr/control/TopicRobotHW
+  appenders: [file, screen]
+  levels: [debug, trace]
+  pattern_layout: "[%5p][%d{HH:mm:ss,SSS}][%M:%L][%c] %m%n"
+  file_name: "plan_hw"
+  joint_names:
+  - ur5_shoulder_pan_joint
+  - ur5_shoulder_lift_joint
+  - ur5_elbow_joint
+  - ur5_wrist_1_joint
+  - ur5_wrist_2_joint
+  - ur5_wrist_3_joint
+
+  base_link  : "ur5_base_link"
+  tool_link  : "ur5_ee_link"
+  robot_description_param: /robot_description
+  robot_description_planning_param: /robot_description_planning
+
+  feedback_joint_state_topic: /joint_states
+  command_joint_state_topic:  /joint_pos_target
+  sampling_period: 0.005
+  diagnostic_period: 0.1
+  feedback_joint_state_timeout: 20
+  maximum_missing_cycles: 100
+
+  remap_source_args:
+  - "/plan_hw/microint/follow_joint_trajectory/cancel"
+  - "/plan_hw/microint/follow_joint_trajectory/feedback"
+  - "/plan_hw/microint/follow_joint_trajectory/goal"
+  - "/plan_hw/microint/follow_joint_trajectory/result"
+  - "/plan_hw/microint/follow_joint_trajectory/status"
+
+  remap_target_args:
+  - "ur5_lab_controller/follow_joint_trajectory/cancel"
+  - "ur5_lab_controller/follow_joint_trajectory/feedback"
+  - "ur5_lab_controller/follow_joint_trajectory/goal"
+  - "ur5_lab_controller/follow_joint_trajectory/result"
+  - "ur5_lab_controller/follow_joint_trajectory/status"
+
+  microint:
+    type: "cnr/control/FollowJointTrajectoryPosVelEffController"
+    controlled_joints: all
+    interpolator: "thor/ThorPrefilter"
+    regulator: "regulator/fake_regulator"
+    spline_order: 1
+  
+

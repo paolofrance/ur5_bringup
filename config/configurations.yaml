@@ -1,0 +1,53 @@
+control_configurations:
+  - name: watch
+    components:
+      - {hardware_interface: "ur_hw", controller : "js_pub"}
+
+  - name: ctrl
+    depends: [watch]
+    components:
+      - { hardware_interface: "ur_hw", controller : "p_j"}
+      
+  - name: cart_impedance
+    depends: [watch]
+    components:
+      - { hardware_interface: "ur_hw", controller : "cart_impedance_controller"}
+      
+  - name: joint_impedance
+    depends: [watch]
+    components:
+      - { hardware_interface: "ur_hw", controller : "joint_impedance_controller"}
+
+  - name: jjog
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "jjog"}
+
+  - name: gt_xyz
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "gt_xyz"}
+
+  - name: var_imp
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "var_imp"}
+
+  - name: thor
+    depends: [ ctrl ]
+    components:
+    - {hardware_interface: "plan_hw", controller: "microint"}
+    
+  - name: thor_cimp
+    depends: [ cart_impedance ]
+    components:
+    - {hardware_interface: "plan_hw", controller: "microint"}
+    
+  - name: thor_jimp
+    depends: [ joint_impedance ]
+    components:
+    - {hardware_interface: "plan_hw", controller: "microint"}
+
+configuration_dispatches:
+- { name: watch,  at: 1.0 }
+
