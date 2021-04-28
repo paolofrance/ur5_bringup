@@ -48,8 +48,8 @@
 
 
   <!-- Run Rviz and load the default config to see the state of the move_group node -->
-  <include file="$(find ur5_lab_moveit)/launch/moveit_rviz.launch" if="$(arg use_rviz)">
-    <arg name="rviz_config" value="$(find ur5_lab_moveit)/launch/moveit.rviz"/>
+  <include file="$(find ur5_bringup)/launch/moveit_rviz.launch" if="$(arg use_rviz)">
+    <arg name="rviz_config" value="$(find ur5_bringup)/config/moveit.rviz"/>
     <arg name="debug" value="$(arg debug)"/>
   </include>
 

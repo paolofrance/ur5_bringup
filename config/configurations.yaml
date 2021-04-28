@@ -50,4 +50,5 @@ control_configurations:
 
 configuration_dispatches:
 - { name: watch,  at: 1.0 }
+- { name: thor ,  at: 2.0 }
 
