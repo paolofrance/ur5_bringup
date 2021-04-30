@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro"
+       name="ur5_lab" >
+
+  <xacro:include filename="$(find ur5_bringup)/urdf/ur5_lab.urdf.xacro" />
+  <xacro:ur5_lab/>
+
+<!--  <xacro:include filename="$(find robotiq_2f_85_gripper_visualization)/urdf/robotiq_arg2f_85_model_macro.xacro" />
+  <xacro:robotiq_arg2f_85 prefix=""/>-->
+
+  <xacro:include filename="$(find robotiq_ft_sensor)/urdf/robotiq_ft300.urdf.xacro" />
+
+  <xacro:robotiq_ft300 parent="ur5_wrist_3_link" prefix="">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:robotiq_ft300>
+
+
+ <!-- <joint name="wl3_tip" type="fixed">
+    <parent link="robotiq_ft_frame_id" />
+    <child link = "robotiq_arg2f_base_link" />
+    <origin xyz="0 0 0.07" rpy="0 0 0" />
+  </joint>-->
+
+  <link name="world" />
+
+  <joint name="wolrd_joint" type="fixed">
+    <parent link="world" />
+    <child link = "ur5_base_link" />
+    <origin xyz="0 0 0.0" rpy="0 0 0" />
+  </joint>
+
+
+  <link name="camera" />
+  <joint name="elmo_camera" type="fixed">
+    <parent link="world" />
+    <child link = "camera" />
+    <origin xyz="2.5 -0.4 0.3" rpy="0 1.517 3.1415" />
+  </joint>
+
+  
+</robot>

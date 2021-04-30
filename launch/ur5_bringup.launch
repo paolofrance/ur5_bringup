@@ -5,7 +5,7 @@
   <arg name="plot_traj" default="true" />
 
 
-  <include file="$(find ur5_lab_moveit)/launch/planning_context.launch" >
+  <include file="$(find ur5_bringup)/launch/planning_context.launch" >
     <arg name="load_robot_description" value="true" />
   </include>
 
@@ -51,6 +51,11 @@
   <include file="$(find ur5_lab_moveit)/launch/moveit_rviz.launch" if="$(arg use_rviz)">
     <arg name="rviz_config" value="$(find ur5_lab_moveit)/launch/moveit.rviz"/>
     <arg name="debug" value="$(arg debug)"/>
+  </include>
+
+  <include file="$(find ur5_lab_moveit)/launch/move_group.launch">
+    <arg name="allow_trajectory_execution" value="true"/>
+    <arg name="load_robot_description" value="false"/>
   </include>
 
     <node name="ft_sensor" pkg="robotiq_ft_sensor" type="rq_sensor" args="/dev/ttyUSB0" />

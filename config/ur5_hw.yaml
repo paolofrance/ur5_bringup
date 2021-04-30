@@ -205,11 +205,11 @@ plan_hw:
   - "/plan_hw/microint/follow_joint_trajectory/status"
 
   remap_target_args:
-  - "follow_joint_trajectory/cancel"
-  - "follow_joint_trajectory/feedback"
-  - "follow_joint_trajectory/goal"
-  - "follow_joint_trajectory/result"
-  - "follow_joint_trajectory/status"
+  - "ur5_lab_controller/follow_joint_trajectory/cancel"
+  - "ur5_lab_controller/follow_joint_trajectory/feedback"
+  - "ur5_lab_controller/follow_joint_trajectory/goal"
+  - "ur5_lab_controller/follow_joint_trajectory/result"
+  - "ur5_lab_controller/follow_joint_trajectory/status"
 
   microint:
     type: "cnr/control/FollowJointTrajectoryPosVelEffController"
