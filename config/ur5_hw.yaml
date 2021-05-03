@@ -64,8 +64,8 @@ ur_hw:
     type: "cnr/control/JointTeleopController"
     controlled_joints: all
 
-  gt_xyz:
-    type: cnr/control/GtTrajDeformationXYZ
+  gt:
+    type: cnr/control/GtTrajDeformation
     controlled_joints: all
     exponential: 4
     min_val: 29
@@ -73,20 +73,23 @@ ur_hw:
     Q_hat: [50, 50, 50, 1, 1, 1]
     R_hat: [1 ,  1,  1, 0, 0, 0]
     Qr   : [20, 20, 20, 1, 1, 1]
-    Rr   : [ 0,  0,  0, 1, 1, .5]
+    Rr   : [ 0,  0,  0, .5, .5, .5]
 
     M_r: [6,6,6,1,1,1]
     K_r: [0,0,6,0,0,0]
     D_r: [25,25,1.5,1,1,1]
     damping_is_ratio: false
 
-    robot_base_frame: ur5_base_link
-    robot_tip_frame: ur5_tool0
+    robot_base_frame  : ur5_base_link
+    robot_tip_frame   : ur5_tool0
     force_sensor_frame: robotiq_ft_frame_id
 
     wrench_deadband: [3,3,3,5,5,5]
     omega_wrench: 150
     use_filtered_wrench: true
+    external_wrench_topic: "/robotiq_ft_wrench"
+
+    pose_target: "/pose_target"
 
     rho: 0
     rho: 0.25

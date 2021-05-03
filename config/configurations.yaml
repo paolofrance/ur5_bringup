@@ -23,10 +23,10 @@ control_configurations:
     components:
     - {hardware_interface: "ur_hw", controller: "jjog"}
 
-  - name: gt_xyz
+  - name: gt
     depends: [ watch ]
     components:
-    - {hardware_interface: "ur_hw", controller: "gt_xyz"}
+    - {hardware_interface: "ur_hw", controller: "gt"}
 
   - name: var_imp
     depends: [ watch ]
@@ -50,5 +50,5 @@ control_configurations:
 
 configuration_dispatches:
 - { name: watch,  at: 1.0 }
-- { name: thor ,  at: 2.0 }
+#- { name: thor ,  at: 2.0 }
 
