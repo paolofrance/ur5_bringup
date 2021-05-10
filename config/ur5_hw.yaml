@@ -91,46 +91,12 @@ ur_hw:
 
     pose_target: "/pose_target"
 
-    rho: 0
-    rho: 0.25
-    omega: 0.3
     sigmoid_width: 3
     sigmoid_half_x: 2
     sigmoid_height: 0.98
     sigmoid_max_y: 0.99
     #sigmoid_height: 0
     #sigmoid_max_y: .99
-
-  var_imp:
-    type: cnr/control/VariableImpedanceCtrl
-    controlled_joints: all
-    exponential: 2
-    min_val: 29
-    sampling_period: 0.008
-
-    M_r: [6,6,6,1,1,1]
-    K_r: [0,0,6,0,0,0]
-    #D_r: [25,25,1.5,1,1,1]
-    D_r: [60,60,1.5,1,1,1]
-    damping_is_ratio: false
-
-    robot_base_frame: ur5_base_link
-    robot_tip_frame: ur5_tool0
-    force_sensor_frame: robotiq_ft_frame_id
-
-    wrench_deadband: [3,3,3,5,5,5]
-    omega_wrench: 150
-    use_filtered_wrench: true
-
-    rho: 0
-    #rho: 0.5
-    omega: 0.5
-    sigmoid_width: 3
-    sigmoid_half_x: 2
-    sigmoid_height: 0.9
-    sigmoid_max_y: 0.95
-    #sigmoid_height: 0
-    #sigmoid_max_y: .95
     
   cart_impedance_controller:
     # REQUIRED:
