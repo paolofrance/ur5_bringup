@@ -69,6 +69,7 @@ ur_hw:
     controlled_joints: all
     exponential: 4
     min_val: 29
+    kin_update_period: 0.008
 
     Q_hat: [50, 50, 50, 1, 1, 1]
     R_hat: [1 ,  1,  1, 0, 0, 0]
@@ -102,7 +103,7 @@ ur_hw:
     # REQUIRED:
     type                  : cnr_control/CartImpedanceController
     inertia               : [ 10, 10, 10, 10, 10, 10]      # in [kg, kg, kg, kg*m^2, kg*m^2, kg*m^2]
-    stiffness             : [1200,800,1200, 120,120,120]   # in [N/m, N/m, N/m, Nm/rad, Nm/rad, Nm/rad]
+    stiffness             : [120,800,120, 120,120,120]   # in [N/m, N/m, N/m, Nm/rad, Nm/rad, Nm/rad]
     damping               : [120,120,120, 120,120,120]     # in [N/(m/s), N/(m/s), N/(m/s), Nm/(rad/s), Nm/rad/s), Nm/rad/s)]
     joint_target_topic    : /joint_pos_target              # setpoint joint topic name
     base_frame            : ur5_base_link                  # name of the base link
@@ -119,8 +120,9 @@ ur_hw:
   joint_impedance_controller:
     # REQUIRED:
     type                  : "cnr_control/JointImpedanceController"
+    pub_log_target        : true
     inertia               : [ 10, 10, 10, 10, 10, 10]      # in [kg*m^2], dimensions should be equal to controlled joints.
-    stiffness             : [1200,800,1200, 120,120,120]   # in [Nm/(rad)], dimensions should be equal to controlled joints.
+    stiffness             : [100,100,100, 120,120,120]   # in [Nm/(rad)], dimensions should be equal to controlled joints.
     damping               : [120,120,120, 120,120,120]     # in [Nm/(rad/s)], dimensions should be equal to controlled joints.
     joint_target_topic    : /joint_pos_target              # setpoint joint topic name
     base_frame            : ur5_base_link                  # name of the base link
@@ -128,12 +130,13 @@ ur_hw:
     sensor_frame          : robotiq_ft_frame_id            # name of the sensor link (has to be integral with tool_frame). Needed if use_wrench=true
     use_wrench            : true                           # if true, a wrench topic is subscribed, joint torques are obtained using kinematic chain. if false, a external_torque (in the configuration space) is subscribed.
 
-    # OPTIONAL: 
+    # OPTIONAL:
     base_is_reference     : false                          # true: impedance in base_frame, false: impedance in tool_frame [DEFAULT: true]
     torque_deadband       : [0.1, 0.1, 0.1, 0.0, 0.0, 0.0] # deadband on the joint torque [DEFAULT: zero]
     external_wrench_topic : /robotiq_ft_wrench             # wrench topic name [DEFAULT: ~/external_wrench]
     external_torques_topic: extra_torques                  # external torque  topic name [DEFAULT: ~/external_torques]
     controlled_joints     : all                            # controlled joint names, [DEFALT: all the joint of the hardware interface]
+    damping_ratio         : [1,1,0.8, 1,1,2]               # adimensional damping ratio. NOTE: possibile alternative to speficy damping. If specified, it is used instead of the damping. In this case the stiffness should be positive.
 
   p_j:
     type: cnr/control/OpenLoopPositionController
