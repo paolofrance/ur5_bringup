@@ -59,7 +59,7 @@ ur_hw:
     controlled_joints: all
     frames: ["ur5_base_link", "ur5_ee_link", "ur5_forearm_link", "ur5_shoulder_link", "ur5_upper_arm_link", "ur5_wrist_1_link", "ur5_wrist_2_link", "ur5_wrist_3_link"]
 
-       
+
   jjog:
     type: "cnr/control/JointTeleopController"
     controlled_joints: all
@@ -116,7 +116,8 @@ ur_hw:
     external_wrench_topic : /robotiq_ft_wrench             # wrench topic name [DEFAULT: ~/external_wrench]
     controlled_joints     : all
     damping_ratio         : [1,1,0.8, 1,1,2]               # adimensional damping ratio. NOTE: possibile alternative to speficy damping. If specified, it is used instead of the damping. In this case the stiffness should be positive.
-    
+    zeroing_sensor_at_startup: true
+
   joint_impedance_controller:
     # REQUIRED:
     type                  : "cnr_control/JointImpedanceController"
@@ -137,11 +138,23 @@ ur_hw:
     external_torques_topic: extra_torques                  # external torque  topic name [DEFAULT: ~/external_torques]
     controlled_joints     : all                            # controlled joint names, [DEFALT: all the joint of the hardware interface]
     damping_ratio         : [1,1,0.8, 1,1,2]               # adimensional damping ratio. NOTE: possibile alternative to speficy damping. If specified, it is used instead of the damping. In this case the stiffness should be positive.
+    zeroing_sensor_at_startup: true
 
   p_j:
     type: cnr/control/OpenLoopPositionController
     setpoint_topic_name: /joint_pos_target
     controlled_joints: all
+
+  c_vel:
+    type: cnr/control/CartesianVelocityController
+    controlled_joints : all
+    kin_update_period : 0.008
+    target_twist_topic: /target_cart_twist  # setpoint twist topic name
+
+
+
+
+
 
 plan_hw:
   type: cnr/control/TopicRobotHW

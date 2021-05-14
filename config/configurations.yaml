@@ -2,6 +2,7 @@ control_configurations:
   - name: watch
     components:
       - {hardware_interface: "ur_hw", controller : "js_pub"}
+      - {hardware_interface: "ft_hw", controller : "ft_pub",  runtime_check: false}
 
   - name: ctrl
     depends: [watch]
@@ -21,7 +22,17 @@ control_configurations:
   - name: jjog
     depends: [ watch ]
     components:
-    - {hardware_interface: "ur_hw", controller: "jjog"}
+      - {hardware_interface: "ur_hw", controller: "jjog"}
+
+  - name: cjog
+    depends: [ watch ]
+    components:
+      - {hardware_interface: "ur_hw", controller: "c_vel"}
+
+  - name: simple_touch
+    depends: [ cjog ]
+    components:
+      - {hardware_interface: "ft_hw", controller: "simple_touch", runtime_check: false}
 
   - name: gt
     depends: [ watch ]
