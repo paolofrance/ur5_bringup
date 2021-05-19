@@ -6,6 +6,7 @@ find_package(catkin REQUIRED
   roscpp
   configuration_msgs
   moveit_planning_helper
+  simple_touch_controller_msgs
   )
 
 

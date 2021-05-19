@@ -202,5 +202,15 @@ plan_hw:
     interpolator: "thor/ThorPrefilter"
     regulator: "regulator/fake_regulator"
     spline_order: 1
+
+
+  c_vel:
+    type: cnr/control/CartesianVelocityController
+    controlled_joints : all
+    kin_update_period : 0.008
+    target_twist_topic: /target_cart_twist  # setpoint twist topic name
+
+
+
   
 

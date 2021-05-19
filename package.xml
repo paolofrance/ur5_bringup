@@ -8,9 +8,10 @@
   <license>TODO</license>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <depend> roscpp                 </depend>
-  <depend> configuration_msgs     </depend>
-  <depend> moveit_planning_helper </depend>
+  <depend> roscpp                      </depend>
+  <depend> configuration_msgs          </depend>
+  <depend> moveit_planning_helper      </depend>
+  <depend> simple_touch_controller_msgs</depend>
 
 
   <export>

@@ -59,7 +59,7 @@
     <arg name="load_robot_description" value="false"/>
   </include>
 
-    <!--node name="ft_sensor" pkg="robotiq_ft_sensor" type="rq_sensor" args="/dev/ttyUSB0" /-->
+<!--    <node name="ft_sensor" pkg="robotiq_ft_sensor" type="rq_sensor" args="/dev/ttyUSB0" />-->
 
     <include file="$(find traj_plotter)/launch/traj_plotter.launch" if="$(arg plot_traj)"/>
 

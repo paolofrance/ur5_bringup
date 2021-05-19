@@ -1,18 +1,18 @@
 #-------------------------------------
 #-lista ordinata dei task da eseguire-
--------------------------------------
+#-------------------------------------
 tasks:
   - "watch"
-  - "home_to_approach"
+  #- "home_to_approach"
   - "pregrasp"
   - "watch"
   - "grasp"
   - "lift"
   - "watch"
 
--------------------------------------
--descrizione dei task da eseguire-
--------------------------------------
+#-------------------------------------
+#-descrizione dei task da eseguire-
+#-------------------------------------
   
 watch:
 # nome della configurazione in cui andare
@@ -34,21 +34,20 @@ home_to_approach:
   traj_id         : "home_to_approach"
 
 pregrasp:
-# esegue un movimento in velocita finchè una certa forza non viene raggiunta
+       # esegue un movimento in velocita finchè una certa forza non viene raggiunta
   configuration       : "simple_touch"
   action_type         : "simple_touch"
   action_name         : "simple_touch"
 
   # params dependent on action type
-# frame rispetto al quale eseguire un movimento (in velocita) [tool - base]
   goal_twist_frame    : "tool"
-  target_wrench_frame : tool            # frame rispetto al quale viene misurata la forza [tool - base]
-  goal_twist          : [0,0,0.05,0,0,0]	# velocità di movimento
-  target_wrench       : [0, 0, -40, 0, 0, 0]	# wrench target, quando viene raggiunta la soglia la action termina e si ferma il movimento
-  wrench_toll         : [1,1,1,1,1,1]		# tolleranza sulla wrench desiderata
+  target_wrench_frame : "tool"
+  goal_twist          : [0,0,0.05,0,0,0]
+  target_wrench       : [0, 0, -40, 0, 0, 0]
+  wrench_toll         : [1,1,1,1,1,1]
   
 grasp:
-	# esegue un movimento in impedenza cartesiana finchè una certa forza non viene raggiunta
+        # esegue un movimento in impedenza cartesiana finchè una certa forza non viene raggiunta
   configuration       : "simple_touch_impedance"
   action_type         : "simple_touch"
   action_name         : "simple_touch"
@@ -59,19 +58,18 @@ grasp:
   goal_twist          : [0,0,0.2,0,0,0]
   target_wrench       : [0, 0, -20, 0, 0, 0]
   wrench_toll         : [5,5,5,5,5,5]
-  attach              : true
-  
-lift:
-# esegue un movimento cartesiano in velocità (da usare per piccoli spostamenti o ancora meglio non usare e preferire una pianificazione)
-  configuration    : "cartesian_motion"
-  action_type      : "cartesian_motion"
-  action_name      : "cartesian_motion"
 
-  # params dependent on action tcaype
-  target_delta_pos : [0,0.02,0.1,0,0,0]		# delta posizione target rispetto alla corrente
-  linear_speed     : 0.03			# velocità lineare alla quale eseguire lo spostamento
-  angular_speed    : 0				# velocità angolare alla quale eseguire lo spostamento
-  linear_toll      : 0.005			# tolleranza lineare rispetto alla posa target
-  angular_toll     : 0.005			# tolleranza angolare rispetto all' orientazione target
-  reference_frame  : base			# frame rispetto al quale viene calcolato il delta posizione [base - tool]
+#lift:
+## esegue un movimento cartesiano in velocità (da usare per piccoli spostamenti o ancora meglio non usare e preferire una pianificazione)
+  #configuration    : "cartesian_motion"
+  #action_type      : "cartesian_motion"
+  #action_name      : "cartesian_motion"
+
+  ## params dependent on action tcaype
+  #target_delta_pos : [0,0.02,0.1,0,0,0]		# delta posizione target rispetto alla corrente
+  #linear_speed     : 0.03			# velocità lineare alla quale eseguire lo spostamento
+  #angular_speed    : 0				# velocità angolare alla quale eseguire lo spostamento
+  #linear_toll      : 0.005			# tolleranza lineare rispetto alla posa target
+  #angular_toll     : 0.005			# tolleranza angolare rispetto all' orientazione target
+  #reference_frame  : base			# frame rispetto al quale viene calcolato il delta posizione [base - tool]
   

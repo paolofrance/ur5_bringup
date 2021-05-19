@@ -34,6 +34,13 @@ control_configurations:
     components:
       - {hardware_interface: "ft_hw", controller: "simple_touch", runtime_check: false}
 
+
+  - name: simple_touch_impedance
+    depends: [ cart_impedance ]
+    components:
+    - {hardware_interface: "ft_hw", controller: "simple_touch", runtime_check: false}
+    - {hardware_interface: "plan_hw", controller: "c_vel", runtime_check: false}
+
   - name: gt
     depends: [ watch ]
     components:

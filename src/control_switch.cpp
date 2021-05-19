@@ -3,6 +3,7 @@
 #include <configuration_msgs/StartConfiguration.h>
 #include <control_msgs/FollowJointTrajectoryAction.h>
 #include <moveit_planning_helper/manage_trajectories.h>
+#include <simple_touch_controller_msgs/simpleTouchAction.h>
 
 
 
@@ -34,7 +35,6 @@ enum ACTION_TYPE
      none                  = 0
     ,FollowJointTrajectory = 1
     ,simpleTouch           = 2
-    ,cartesianMotion       = 3
 };
 }
 const std::map<std::string, action_type::ACTION_TYPE> action_map_ = {
@@ -48,10 +48,6 @@ const std::map<std::string, action_type::ACTION_TYPE> action_map_ = {
    ,{"simple_touch"           ,action_type::simpleTouch          }
    ,{"simpletouch"            ,action_type::simpleTouch          }
    ,{"velocity_touch"         ,action_type::simpleTouch          }
-   ,{"cart"                   ,action_type::cartesianMotion      }
-   ,{"cartesian"              ,action_type::cartesianMotion      }
-   ,{"cartesianmotion"        ,action_type::cartesianMotion      }
-   ,{"cartesian_motion"       ,action_type::cartesianMotion      }
 }; 
 
   
@@ -62,7 +58,7 @@ struct Task
   const std::string id;
   
   control_msgs::FollowJointTrajectoryGoal       goal_trajectory;
-//   simple_touch_controller_msgs::simpleTouchGoal goal_touch;
+  simple_touch_controller_msgs::simpleTouchGoal goal_touch;
 //   cartesian_motion_msgs::cartMotionGoal         goal_cart;
   
   std::string traj_id;
@@ -109,13 +105,13 @@ struct Task
   
   inline bool getGoalTouch()
   {
-//     goal_touch.goal_twist          = goal_twist;
-//     goal_touch.target_wrench       = target_wrench;
-//     goal_touch.wrench_toll         = goal_toll;
-//     goal_touch.wrench_deadband     = wrench_deadband;
-//     goal_touch.target_wrench_frame = target_frame;
-//     goal_touch.goal_twist_frame    = goal_twist_frame;
-//     
+     goal_touch.goal_twist          = goal_twist;
+     goal_touch.target_wrench       = target_wrench;
+     goal_touch.wrench_toll         = goal_toll;
+     goal_touch.wrench_deadband     = wrench_deadband;
+     goal_touch.target_wrench_frame = target_frame;
+     goal_touch.goal_twist_frame    = goal_twist_frame;
+
     return true;
   }
   
@@ -193,16 +189,16 @@ bool getParams(ros::NodeHandle nh_, Task& task)
       
       break;
     }    
-    case(action_type::cartesianMotion):
-    {
-      GET_AND_DEFAULT(nh_,task.id+"/linear_speed"    , task.linear_speed      , 0       );
-      GET_AND_DEFAULT(nh_,task.id+"/angular_speed"   , task.angular_speed     , 0       );
-      GET_AND_DEFAULT(nh_,task.id+"/linear_toll"     , task.linear_tollerance , 0       );
-      GET_AND_DEFAULT(nh_,task.id+"/angular_toll"    , task.angular_tollerance, 0       );
-      GET_AND_DEFAULT(nh_,task.id+"/target_delta_pos", task.target_delta_pos  , zero_def);
-      GET_AND_DEFAULT(nh_,task.id+"/reference_frame" , task.target_frame      , "base"  );
-      break;
-    }    
+//    case(action_type::cartesianMotion):
+//    {
+//      GET_AND_DEFAULT(nh_,task.id+"/linear_speed"    , task.linear_speed      , 0       );
+//      GET_AND_DEFAULT(nh_,task.id+"/angular_speed"   , task.angular_speed     , 0       );
+//      GET_AND_DEFAULT(nh_,task.id+"/linear_toll"     , task.linear_tollerance , 0       );
+//      GET_AND_DEFAULT(nh_,task.id+"/angular_toll"    , task.angular_tollerance, 0       );
+//      GET_AND_DEFAULT(nh_,task.id+"/target_delta_pos", task.target_delta_pos  , zero_def);
+//      GET_AND_DEFAULT(nh_,task.id+"/reference_frame" , task.target_frame      , "base"  );
+//      break;
+//    }
   }
   
   GET_AND_DEFAULT(nh_,task.id+"/attach", task.attach,false);
@@ -222,6 +218,9 @@ int main(int argc, char **argv)
   
   std::vector<std::string> tasks;
   nh.getParam("tasks",tasks);
+
+  for (size_t i;i<tasks.size();i++)
+      ROS_FATAL_STREAM(tasks[i]);
 
 
   for (auto t : tasks)
@@ -255,18 +254,18 @@ int main(int argc, char **argv)
       }
       case(action_type::simpleTouch):
       {
-//         task.getGoalTouch();
-//         actionlib::SimpleActionClient<simple_touch_controller_msgs::simpleTouchAction> touch_action ( task.action_name, true );
-//         touch_action.sendGoal ( task.goal_touch);
-//         touch_action.waitForResult();
+         task.getGoalTouch();
+         actionlib::SimpleActionClient<simple_touch_controller_msgs::simpleTouchAction> touch_action ( task.action_name, true );
+         touch_action.sendGoal ( task.goal_touch);
+         touch_action.waitForResult();
       }
-      case(action_type::cartesianMotion):
-      {
-//         task.getGoalCart();
-//         actionlib::SimpleActionClient<cartesian_motion_msgs::cartMotionAction> cart_action ( task.action_name, true );
-//         cart_action.sendGoal ( task.goal_cart);
-//         cart_action.waitForResult();
-      }
+//      case(action_type::cartesianMotion):
+//      {
+////         task.getGoalCart();
+////         actionlib::SimpleActionClient<cartesian_motion_msgs::cartMotionAction> cart_action ( task.action_name, true );
+////         cart_action.sendGoal ( task.goal_cart);
+////         cart_action.waitForResult();
+//      }
     }
   }
 
