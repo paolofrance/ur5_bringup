@@ -46,6 +46,11 @@ control_configurations:
     components:
     - {hardware_interface: "ur_hw", controller: "gt"}
 
+  - name: gt_velocity
+    depends: [ cjog ]
+    components:
+    - {hardware_interface: "plan_hw", controller: "gt"}
+
   - name: var_imp
     depends: [ watch ]
     components:

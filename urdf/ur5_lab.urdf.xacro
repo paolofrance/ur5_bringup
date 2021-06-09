@@ -5,15 +5,9 @@
   <xacro:macro name="ur5_lab">
     
 
-  <xacro:include filename="$(find ur_description)/urdf/ur5.urdf.xacro" prefix="joint_limited"/>
-  
+  <xacro:include filename="$(find ur_description)/urdf/inc/ur5_macro.xacro"/>
+  <xacro:ur5_robot prefix="ur5_"/>
 
-  <xacro:arg name="transmission_hw_interface" default="hardware_interface/PositionJointInterface"/>
-  <xacro:arg name="kinematics_config" default="$(find ur_description)/config/ur5_default.yaml"/>
-  <xacro:ur5_robot prefix="ur5_" joint_limited="true"
-    transmission_hw_interface="$(arg transmission_hw_interface)"
-    kinematics_file="${load_yaml('$(arg kinematics_config)')}"
-  />
   
   </xacro:macro>
 </robot>
