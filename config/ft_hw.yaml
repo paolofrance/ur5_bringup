@@ -1,7 +1,7 @@
 ft_hw:
   type: cnr/control/RobotiqForceTorqueHw
   appenders: [file, screen]
-  levels: [info, info]
+  levels: [trace, info]
   pattern_layout: "[%5p][%d{HH:mm:ss,SSS}][%M:%L][%c] %m%n"
   file_name: "ur_hw"
   default_throttle_time: 20.0

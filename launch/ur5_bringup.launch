@@ -24,8 +24,8 @@
 
     <rosparam>
       appenders: [screen,file]
-      levels: [info,info]
-      file_name: "aaa"
+      levels: [info,trace]
+      file_name: "configuration_manager"
       append_to_file: true
       pattern_layout: "[%5p][%d{HH:mm:ss,SSS}][%M:%04L][%c] %m%n"
     </rosparam>

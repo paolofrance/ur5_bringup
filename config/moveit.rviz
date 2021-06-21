@@ -5,9 +5,10 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /MotionPlanning1/Planning Request1
+        - /TF1
         - /TF1/Frames1
       Splitter Ratio: 0.7425600290298462
-    Tree Height: 71
+    Tree Height: 332
   - Class: rviz/Help
     Name: Help
   - Class: rviz/Views
@@ -15,6 +16,8 @@ Panels:
       - /Current View1
     Name: Views
     Splitter Ratio: 0.5
+  - Class: configuration_gui/ConfigurationManager
+    Name: ConfigurationManager
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -99,12 +102,15 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-            Value: true
-          ur5_ee_link:
+          ur5_base_link_inertia:
             Alpha: 1
             Show Axes: false
             Show Trail: false
             Value: true
+          ur5_flange:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
           ur5_forearm_link:
             Alpha: 1
             Show Axes: false
@@ -214,12 +220,15 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-            Value: true
-          ur5_ee_link:
+          ur5_base_link_inertia:
             Alpha: 1
             Show Axes: false
             Show Trail: false
             Value: true
+          ur5_flange:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
           ur5_forearm_link:
             Alpha: 1
             Show Axes: false
@@ -277,21 +286,23 @@ Visualization Manager:
         ft300_sensor:
           Value: false
         robotiq_ft_frame_id:
-          Value: true
+          Value: false
         tool0_controller:
           Value: false
         ur5_base:
           Value: false
         ur5_base_link:
           Value: true
-        ur5_ee_link:
+        ur5_base_link_inertia:
+          Value: false
+        ur5_flange:
           Value: false
         ur5_forearm_link:
           Value: false
         ur5_shoulder_link:
           Value: false
         ur5_tool0:
-          Value: false
+          Value: true
         ur5_upper_arm_link:
           Value: false
         ur5_wrist_1_link:
@@ -314,20 +325,20 @@ Visualization Manager:
           ur5_base_link:
             ur5_base:
               {}
-            ur5_shoulder_link:
-              ur5_upper_arm_link:
-                ur5_forearm_link:
-                  ur5_wrist_1_link:
-                    ur5_wrist_2_link:
-                      ur5_wrist_3_link:
-                        ft300_mounting_plate:
-                          ft300_sensor:
-                            robotiq_ft_frame_id:
+            ur5_base_link_inertia:
+              ur5_shoulder_link:
+                ur5_upper_arm_link:
+                  ur5_forearm_link:
+                    ur5_wrist_1_link:
+                      ur5_wrist_2_link:
+                        ur5_wrist_3_link:
+                          ft300_mounting_plate:
+                            ft300_sensor:
+                              robotiq_ft_frame_id:
+                                {}
+                          ur5_flange:
+                            ur5_tool0:
                               {}
-                        ur5_ee_link:
-                          {}
-                        ur5_tool0:
-                          {}
       Update Interval: 0
       Value: true
   Enabled: true
@@ -353,23 +364,25 @@ Visualization Manager:
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.23383080959320068
-        Y: 1.0480215549468994
-        Z: -7.450522332419496e-8
+        X: 0.402925968170166
+        Y: -0.34573042392730713
+        Z: -1.341098823104403e-7
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.12479767203330994
+      Pitch: 0.2097976803779602
       Target Frame: world
       Value: XYOrbit (rviz)
-      Yaw: 0.9367652535438538
+      Yaw: 6.26495361328125
     Saved: ~
 Window Geometry:
+  ConfigurationManager:
+    collapsed: false
   Displays:
     collapsed: false
-  Height: 692
+  Height: 1029
   Help:
     collapsed: false
   Hide Left Dock: false
@@ -378,9 +391,9 @@ Window Geometry:
     collapsed: false
   MotionPlanning - Trajectory Slider:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000100000000000001e500000259fc0200000007fb000000100044006900730070006c006100790073010000003e000000cb000000cb00fffffffb0000000800480065006c00700000000342000000bb0000006f00fffffffb0000000a0056006900650077007300000003b0000000b0000000a500fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e00670100000374000001890000000000000000fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000004100fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e0067010000010f000001880000017d00ffffff000001d10000025900000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000200000000000001e5000003aafc0200000007fb000000100044006900730070006c006100790073010000003e000001d0000000cb00fffffffb0000000800480065006c00700000000342000000bb0000006f00fffffffb0000000a0056006900650077007300000003b0000000b0000000a500fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e00670100000374000001890000000000000000fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000004100fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e00670100000214000001d40000017d00ffffff0000000100000112000003aafc0200000001fb000000280043006f006e00660069006700750072006100740069006f006e004d0061006e0061006700650072010000003e000003aa000002ab00ffffff00000479000003aa00000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Views:
     collapsed: false
-  Width: 956
-  X: 960
+  Width: 1916
+  X: 0
   Y: 18

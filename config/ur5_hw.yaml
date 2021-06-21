@@ -1,7 +1,8 @@
 ur_hw:
   type: cnr_ur_driver/UrCB3HardwareInterface
+  #type: ur_driver/HardwareInterface
   appenders: [file, screen]
-  levels: [info, info]
+  levels: [trace, info]
   pattern_layout: "[%5p][%d{HH:mm:ss,SSS}][%M:%L][%c] %m%n"
   file_name: "ur_hw"
   default_throttle_time: 20.0
@@ -14,15 +15,24 @@ ur_hw:
   - ur5_wrist_2_joint
   - ur5_wrist_3_joint
 
+
+  #joints:
+  #- ur5_shoulder_pan_joint
+  #- ur5_shoulder_lift_joint
+  #- ur5_elbow_joint
+  #- ur5_wrist_1_joint
+  #- ur5_wrist_2_joint
+  #- ur5_wrist_3_joint
+
   robot_ip: 192.168.254.30
   reverse_port: 50001
   script_sender_port: 50002
   tf_prefix: ''
   headless_mode: false
-  #script_file: /home/brontolo/community_ws/src/devices/robots/Universal_Robots_ROS_Driver/ur_robot_driver/resources/ros_control.urscript
-  #output_recipe_file: /home/brontolo/community_ws/src/devices/robots/Universal_Robots_ROS_Driver/ur_robot_driver/resources/rtde_output_recipe.txt
-  #input_recipe_file: /home/brontolo/community_ws/src/devices/robots/Universal_Robots_ROS_Driver/ur_robot_driver/resources/rtde_input_recipe.txt
-  #ext_control_path: /programs/exc.urp
+  script_file: /home/brontolo/community_ws/src/devices/robots/Universal_Robots_ROS_Driver/ur_robot_driver/resources/ros_control.urscript
+  output_recipe_file: /home/brontolo/community_ws/src/devices/robots/Universal_Robots_ROS_Driver/ur_robot_driver/resources/rtde_output_recipe.txt
+  input_recipe_file: /home/brontolo/community_ws/src/devices/robots/Universal_Robots_ROS_Driver/ur_robot_driver/resources/rtde_input_recipe.txt
+  ext_control_path: /programs/exc.urp
   use_tool_communication: false
   tool_voltage: 0
   tool_parity: 0
@@ -38,18 +48,76 @@ ur_hw:
 
   remap_source_args:
   - "/ur_hw/js_pub/joint_states"
+  - "/ur_hw/gt/current_pose"
+  - "/ur_hw/gt/alpha"
+  - "/ur_hw/gt/filtered_wrench_base"
+  - "/ur_hw/gt/wrench_base"
+  - "/ur_hw/gt/var_D"
+  - "/ur_hw/gt/var_K"
+  - "/ur_hw/gt/robot_u"
+  - "/ur_hw/gt/human_u"
+  - "/ur_hw/lqr/current_pose"
+  - "/ur_hw/lqr/alpha"
+  - "/ur_hw/lqr/filtered_wrench_base"
+  - "/ur_hw/lqr/wrench_base"
+  - "/ur_hw/lqr/var_D"
+  - "/ur_hw/lqr/var_K"
+  - "/ur_hw/lqr/robot_u"
+  - "/ur_hw/lqr/human_u"
+  - "/ur_hw/imp_low_k/current_pose"
+  - "/ur_hw/imp_low_k/filtered_wrench_base"
+  - "/ur_hw/imp_low_k/wrench_base"
+  - "/ur_hw/imp_low_k/var_D"
+  - "/ur_hw/imp_low_k/var_K"
+  - "/ur_hw/imp_high_k/current_pose"
+  - "/ur_hw/imp_high_k/filtered_wrench_base"
+  - "/ur_hw/imp_high_k/wrench_base"
+  - "/ur_hw/imp_high_k/var_D"
+  - "/ur_hw/imp_high_k/var_K"
 
   remap_target_args:
   - "/joint_states"
+  - "/current_pose"
+  - "/alpha"
+  - "/filtered_wrench_base"
+  - "/wrench_base"
+  - "/var_D"
+  - "/var_K"
+  - "/robot_u"
+  - "/human_u"
+  - "/current_pose"
+  - "/alpha"
+  - "/filtered_wrench_base"
+  - "/wrench_base"
+  - "/var_D"
+  - "/var_K"
+  - "/robot_u"
+  - "/human_u"
+  - "/current_pose"
+  - "/filtered_wrench_base"
+  - "/wrench_base"
+  - "/var_D"
+  - "/var_K"
+  - "/current_pose"
+  - "/filtered_wrench_base"
+  - "/wrench_base"
+  - "/var_D"
+  - "/var_K"
 
   js_pub:
     type: cnr/control/JointStatePublisher
     controlled_joints: all
 
+  c_pose_pub:
+    type: cnr/control/StateCtrl
+    controlled_joints: all
+    kin_update_period: 0.008
+    cartesian_pose_topic: "current_pose"
+
   tf_pub:
     type: cnr/control/RobotStateController
     controlled_joints: all
-    frames: ["ur5_base_link", "ur5_ee_link", "ur5_forearm_link", "ur5_shoulder_link", "ur5_upper_arm_link", "ur5_wrist_1_link", "ur5_wrist_2_link", "ur5_wrist_3_link"]
+    frames: ["ur5_tool0"]
 
 
   jjog:
@@ -65,12 +133,17 @@ ur_hw:
 
     Q_hat: [50, 50, 50, 1, 1, 1]
     R_hat: [1 ,  1,  1, 0, 0, 0]
+    #Qr   : [20, 20, 20, 20, 20, 1]   # damping aumenta, da indagare
     Qr   : [20, 20, 20, 1, 1, 1]
     Rr   : [ 0,  0,  0, .5, .5, .5]
 
+    ## #low robot impedance parameters
+    #Qr   : [10, 10, 10, 1, 1, 1]
+    #Rr   : [ 0,  0,  0, 10, 10, 10]
+
     M_r: [6,6,6,1,1,1]
     K_r: [0,0,6,0,0,0]
-    D_r: [25,25,1.5,1,1,1]
+    D_r: [35,35,1.5,1,1,1]
     damping_is_ratio: false
 
     robot_base_frame  : ur5_base_link
@@ -78,25 +151,112 @@ ur_hw:
     force_sensor_frame: robotiq_ft_frame_id
 
     wrench_deadband: [3,3,3,5,5,5]
-    omega_wrench: 150
+    omega_wrench: 300
     use_filtered_wrench: true
     external_wrench_topic: "/robotiq_ft_wrench"
 
-    pose_target: "/pose_target"
+    pose_target: "/target_cart_pose"
+    #twist_target: "/target_cart_twist"
 
     sigmoid_width: 3
     sigmoid_half_x: 2
-    sigmoid_height: 0.98
+    sigmoid_height: 0.98     # for shared control (variable impedance)
     sigmoid_max_y: 0.99
-    #sigmoid_height: 0
-    #sigmoid_max_y: .99
-    
+
+  lqr:
+    type: cnr/control/GtTrajDeformation
+    controlled_joints: all
+    exponential: 4
+    min_val: 29
+    kin_update_period: 0.008
+
+    Q_hat: [50, 50, 50, 1, 1, 1]
+    R_hat: [1 ,  1,  1, 0, 0, 0]
+    Qr   : [20, 20, 20, 1, 1, 1]
+    Rr   : [ 0,  0,  0, .5, .5, .5]
+
+    ## #low robot impedance parameters
+    #Qr   : [10, 10, 10, 1, 1, 1]
+    #Rr   : [ 0,  0,  0, 10, 10, 10]
+
+    M_r: [6,6,6,1,1,1]
+    K_r: [0,0,6,0,0,0]
+    D_r: [35,35,1.5,1,1,1]
+    damping_is_ratio: false
+
+    robot_base_frame  : ur5_base_link
+    robot_tip_frame   : ur5_tool0
+    force_sensor_frame: robotiq_ft_frame_id
+
+    wrench_deadband: [3,3,3,5,5,5]
+    omega_wrench: 300
+    use_filtered_wrench: true
+    external_wrench_topic: "/robotiq_ft_wrench"
+
+    pose_target: "/target_cart_pose"
+    #twist_target: "/target_cart_twist"
+
+    sigmoid_width: 3
+    sigmoid_half_x: 2
+    sigmoid_height: 0        # for robot control  (fixed impedance)
+    sigmoid_max_y: 0.99
+
+  imp_low_k:
+    type: cnr/control/VariableImpedanceCtrl
+    controlled_joints: all
+    exponential: 4
+    min_val: 29
+    kin_update_period: 0.008
+
+
+    M_r: [6,6,6,1,1,1]
+    K_r: [20,20,6,0,0,0]
+    D_r: [0.9,0.9,1.5,1,1,1]
+    damping_is_ratio: true
+
+    robot_base_frame  : ur5_base_link
+    robot_tip_frame   : ur5_tool0
+    force_sensor_frame: robotiq_ft_frame_id
+
+    wrench_deadband: [3,3,3,5,5,5]
+    omega_wrench: 300
+    use_filtered_wrench: true
+    external_wrench_topic: "/robotiq_ft_wrench"
+
+    pose_target: "/target_cart_pose"
+    #twist_target: "/target_cart_twist"
+
+  imp_high_k:
+    type: cnr/control/VariableImpedanceCtrl
+    controlled_joints: all
+    exponential: 4
+    min_val: 29
+    kin_update_period: 0.008
+
+
+    M_r: [6,6,6,1,1,1]
+    K_r: [100,100,6,0,0,0]
+    D_r: [0.9,0.9,1.5,1,1,1]
+    damping_is_ratio: true
+
+    robot_base_frame  : ur5_base_link
+    robot_tip_frame   : ur5_tool0
+    force_sensor_frame: robotiq_ft_frame_id
+
+    wrench_deadband: [3,3,3,5,5,5]
+    omega_wrench: 300
+    use_filtered_wrench: true
+    external_wrench_topic: "/robotiq_ft_wrench"
+
+    pose_target: "/target_cart_pose"
+    #twist_target: "/target_cart_twist"
+
   cart_impedance_controller:
     # REQUIRED:
     type                  : cnr_control/CartImpedanceController
     inertia               : [ 10, 10, 10, 10, 10, 10]      # in [kg, kg, kg, kg*m^2, kg*m^2, kg*m^2]
-    stiffness             : [120,800,120, 120,120,120]   # in [N/m, N/m, N/m, Nm/rad, Nm/rad, Nm/rad]
-    damping               : [120,120,120, 120,120,120]     # in [N/(m/s), N/(m/s), N/(m/s), Nm/(rad/s), Nm/rad/s), Nm/rad/s)]
+    stiffness             : [20,20,1000, 1000,1000,1000]   # in [N/m, N/m, N/m, Nm/rad, Nm/rad, Nm/rad]
+    damping               : [120,120,1000, 1000,1000,1000]     # in [N/(m/s), N/(m/s), N/(m/s), Nm/(rad/s), Nm/rad/s), Nm/rad/s)]
     joint_target_topic    : /joint_pos_target              # setpoint joint topic name
     base_frame            : ur5_base_link                  # name of the base link
     tool_frame            : ur5_tool0                      # name of the tool link
@@ -104,10 +264,10 @@ ur_hw:
 
     # OPTIONAL: 
     base_is_reference     : false                          # true: impedance in base_frame, false: impedance in tool_frame [DEFAULT: true]
-    wrench_deadband       : [0.1, 0.1, 0.1, 0.0, 0.0, 0.0] # deadband on the wrench topic [DEFAULT: zero]
+    wrench_deadband       : [3,3,3,5,5,5]                  # deadband on the wrench topic [DEFAULT: zero]
     external_wrench_topic : /robotiq_ft_wrench             # wrench topic name [DEFAULT: ~/external_wrench]
     controlled_joints     : all
-    damping_ratio         : [1,1,0.8, 1,1,2]               # adimensional damping ratio. NOTE: possibile alternative to speficy damping. If specified, it is used instead of the damping. In this case the stiffness should be positive.
+    damping_ratio         : [0.8,0.8,0.8, 1,1,2]               # adimensional damping ratio. NOTE: possibile alternative to speficy damping. If specified, it is used instead of the damping. In this case the stiffness should be positive.
     zeroing_sensor_at_startup: true
 
   joint_impedance_controller:
@@ -136,9 +296,10 @@ ur_hw:
     type: cnr/control/OpenLoopPositionController
     setpoint_topic_name: /joint_pos_target
     controlled_joints: all
+    kin_update_period : 0.008
 
   c_vel:
-    type: cnr/control/CartesianVelocityController
+    type: cnr/control/CartesianVelocityToJointVelocityController
     controlled_joints : all
     kin_update_period : 0.008
     target_twist_topic: /target_cart_twist  # setpoint twist topic name
@@ -151,7 +312,7 @@ ur_hw:
 plan_hw:
   type: cnr/control/TopicRobotHW
   appenders: [file, screen]
-  levels: [debug, trace]
+  levels: [trace, info]
   pattern_layout: "[%5p][%d{HH:mm:ss,SSS}][%M:%L][%c] %m%n"
   file_name: "plan_hw"
   joint_names:
@@ -181,6 +342,7 @@ plan_hw:
   - "/plan_hw/microint/follow_joint_trajectory/result"
   - "/plan_hw/microint/follow_joint_trajectory/status"
   - "/plan_hw/gt/target_cart_twist"
+  - "/plan_hw/gt/current_pose"
 
   remap_target_args:
   - "ur5_lab_controller/follow_joint_trajectory/cancel"
@@ -189,6 +351,7 @@ plan_hw:
   - "ur5_lab_controller/follow_joint_trajectory/result"
   - "ur5_lab_controller/follow_joint_trajectory/status"
   - "target_cart_twist"
+  - "/current_pose"
 
   microint:
     type: "cnr/control/FollowJointTrajectoryPosVelEffController"
@@ -202,7 +365,7 @@ plan_hw:
     type: cnr/control/CartesianVelocityController
     controlled_joints : all
     kin_update_period : 0.008
-    target_twist_topic: /target_cart_twist  # setpoint twist topic name
+    target_twist_topic: "/target_cart_twist"  # setpoint twist topic name
 
   gt:
     type: cnr/control/GtTrajDeformation
@@ -238,5 +401,3 @@ plan_hw:
     sigmoid_max_y: 0.99
     #sigmoid_height: 0
     #sigmoid_max_y: .99
-  
-
