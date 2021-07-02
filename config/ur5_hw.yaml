@@ -1,6 +1,6 @@
 ur_hw:
   type: cnr_ur_driver/UrCB3HardwareInterface
-  #type: ur_driver/HardwareInterface
+#  type: ur_driver/HardwareInterface
   appenders: [file, screen]
   levels: [trace, info]
   pattern_layout: "[%5p][%d{HH:mm:ss,SSS}][%M:%L][%c] %m%n"
@@ -16,13 +16,13 @@ ur_hw:
   - ur5_wrist_3_joint
 
 
-  #joints:
-  #- ur5_shoulder_pan_joint
-  #- ur5_shoulder_lift_joint
-  #- ur5_elbow_joint
-  #- ur5_wrist_1_joint
-  #- ur5_wrist_2_joint
-  #- ur5_wrist_3_joint
+  joints:
+  - ur5_shoulder_pan_joint
+  - ur5_shoulder_lift_joint
+  - ur5_elbow_joint
+  - ur5_wrist_1_joint
+  - ur5_wrist_2_joint
+  - ur5_wrist_3_joint
 
   robot_ip: 192.168.254.30
   reverse_port: 50001
@@ -56,6 +56,7 @@ ur_hw:
   - "/ur_hw/gt/var_K"
   - "/ur_hw/gt/robot_u"
   - "/ur_hw/gt/human_u"
+  - "/ur_hw/gt/human_wrench"
   - "/ur_hw/lqr/current_pose"
   - "/ur_hw/lqr/alpha"
   - "/ur_hw/lqr/filtered_wrench_base"
@@ -64,16 +65,25 @@ ur_hw:
   - "/ur_hw/lqr/var_K"
   - "/ur_hw/lqr/robot_u"
   - "/ur_hw/lqr/human_u"
+  - "/ur_hw/lqr/human_wrench"
   - "/ur_hw/imp_low_k/current_pose"
   - "/ur_hw/imp_low_k/filtered_wrench_base"
   - "/ur_hw/imp_low_k/wrench_base"
   - "/ur_hw/imp_low_k/var_D"
   - "/ur_hw/imp_low_k/var_K"
+  - "/ur_hw/imp_low_k/human_wrench"
   - "/ur_hw/imp_high_k/current_pose"
   - "/ur_hw/imp_high_k/filtered_wrench_base"
   - "/ur_hw/imp_high_k/wrench_base"
   - "/ur_hw/imp_high_k/var_D"
   - "/ur_hw/imp_high_k/var_K"
+  - "/ur_hw/imp_high_k/human_wrench"
+  - "/ur_hw/imp_var_k/current_pose"
+  - "/ur_hw/imp_var_k/filtered_wrench_base"
+  - "/ur_hw/imp_var_k/wrench_base"
+  - "/ur_hw/imp_var_k/var_D"
+  - "/ur_hw/imp_var_k/var_K"
+  - "/ur_hw/imp_var_k/human_wrench"
 
   remap_target_args:
   - "/joint_states"
@@ -85,6 +95,7 @@ ur_hw:
   - "/var_K"
   - "/robot_u"
   - "/human_u"
+  - "/human_wrench"
   - "/current_pose"
   - "/alpha"
   - "/filtered_wrench_base"
@@ -93,16 +104,25 @@ ur_hw:
   - "/var_K"
   - "/robot_u"
   - "/human_u"
+  - "/human_wrench"
   - "/current_pose"
   - "/filtered_wrench_base"
   - "/wrench_base"
   - "/var_D"
   - "/var_K"
+  - "/human_wrench"
   - "/current_pose"
   - "/filtered_wrench_base"
   - "/wrench_base"
   - "/var_D"
   - "/var_K"
+  - "/human_wrench"
+  - "/current_pose"
+  - "/filtered_wrench_base"
+  - "/wrench_base"
+  - "/var_D"
+  - "/var_K"
+  - "/human_wrench"
 
   js_pub:
     type: cnr/control/JointStatePublisher
@@ -204,8 +224,8 @@ ur_hw:
   imp_low_k:
     type: cnr/control/VariableImpedanceCtrl
     controlled_joints: all
-    exponential: 4
-    min_val: 29
+    exponential: 0
+    min_val: 0
     kin_update_period: 0.008
 
 
@@ -226,11 +246,38 @@ ur_hw:
     pose_target: "/target_cart_pose"
     #twist_target: "/target_cart_twist"
 
+
+  imp_var_k:
+    type: cnr/control/VariableImpedanceCtrl
+    controlled_joints: all
+    variable_damping: false
+    exponential: .1
+    min_val: 20
+    kin_update_period: 0.008
+
+
+    M_r: [6,6,6,1,1,1]
+    K_r: [200,200,6,0,0,0]
+    D_r: [0.9,0.9,1.5,1,1,1]
+    damping_is_ratio: true
+
+    robot_base_frame  : ur5_base_link
+    robot_tip_frame   : ur5_tool0
+    force_sensor_frame: robotiq_ft_frame_id
+
+    wrench_deadband: [3,3,3,5,5,5]
+    omega_wrench: 300
+    use_filtered_wrench: true
+    external_wrench_topic: "/robotiq_ft_wrench"
+
+    pose_target: "/target_cart_pose"
+    #twist_target: "/target_cart_twist"
+
   imp_high_k:
     type: cnr/control/VariableImpedanceCtrl
     controlled_joints: all
-    exponential: 4
-    min_val: 29
+    exponential: 0
+    min_val: 0
     kin_update_period: 0.008
 
 
@@ -293,7 +340,7 @@ ur_hw:
     zeroing_sensor_at_startup: true
 
   p_j:
-    type: cnr/control/OpenLoopPositionController
+    type: cnr/control/OpenLoopoPositionController
     setpoint_topic_name: /joint_pos_target
     controlled_joints: all
     kin_update_period : 0.008

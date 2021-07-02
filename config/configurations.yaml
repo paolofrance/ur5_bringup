@@ -9,44 +9,43 @@ control_configurations:
     components:
       - { hardware_interface: "ur_hw", controller : "p_j"}
       
-  - name: cart_impedance
+  - name: zz_cart_impedance
     depends: [watch]
     components:
       - {hardware_interface: "ur_hw", controller : "c_pose_pub"}
       - { hardware_interface: "ur_hw", controller : "cart_impedance_controller"}
       
-  - name: joint_impedance
+  - name: zz_joint_impedance
     depends: [watch]
     components:
       - { hardware_interface: "ur_hw", controller : "joint_impedance_controller"}
 
-  - name: jjog
+  - name: zz_jjog
     depends: [ watch ]
     components:
       - {hardware_interface: "ur_hw", controller: "jjog"}
 
-  - name: cjog
+  - name: zz_cjog
     depends: [ watch ]
     components:
       - {hardware_interface: "ur_hw", controller: "c_vel"}
 
   - name: simple_touch
-    depends: [ cjog ]
+    depends: [ zz_cjog ]
     components:
       - {hardware_interface: "ft_hw", controller: "simple_touch"}
 
-
   - name: simple_touch_impedance
-    depends: [ cart_impedance ]
+    depends: [ zz_cart_impedance ]
     components:
     - {hardware_interface: "ft_hw", controller: "simple_touch"}
     - {hardware_interface: "plan_hw", controller: "c_vel"}
 
 
-  - name: cart_vel_impedance
-    depends: [ cart_impedance ]
-    components:
-    - {hardware_interface: "plan_hw", controller: "c_vel"}
+#  - name: cart_vel_impedance
+#    depends: [ zz_cart_impedance ]
+#    components:
+#    - {hardware_interface: "plan_hw", controller: "c_vel"}
 
   - name: gt
     depends: [ watch ]
@@ -58,11 +57,6 @@ control_configurations:
     components:
     - {hardware_interface: "ur_hw", controller: "lqr"}
 
-  - name: gt_velocity
-    depends: [ cjog ]
-    components:
-    - {hardware_interface: "plan_hw", controller: "gt"}
-
   - name: imp_low_k
     depends: [ watch ]
     components:
@@ -73,18 +67,24 @@ control_configurations:
     components:
     - {hardware_interface: "ur_hw", controller: "imp_high_k"}
 
+  - name: imp_var_k
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "imp_var_k"}
+
+
   - name: thor
     depends: [ ctrl ]
     components:
     - {hardware_interface: "plan_hw", controller: "microint"}
     
   - name: thor_cimp
-    depends: [ cart_impedance ]
+    depends: [ zz_cart_impedance ]
     components:
     - {hardware_interface: "plan_hw", controller: "microint"}
     
   - name: thor_jimp
-    depends: [ joint_impedance ]
+    depends: [ zz_joint_impedance ]
     components:
     - {hardware_interface: "plan_hw", controller: "microint"}
 
