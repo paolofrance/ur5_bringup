@@ -9,43 +9,47 @@ control_configurations:
     components:
       - { hardware_interface: "ur_hw", controller : "p_j"}
       
-  - name: zz_cart_impedance
+  - name: cart_impedance
     depends: [watch]
+    hidden: true
     components:
       - {hardware_interface: "ur_hw", controller : "c_pose_pub"}
       - { hardware_interface: "ur_hw", controller : "cart_impedance_controller"}
       
-  - name: zz_joint_impedance
+  - name: joint_impedance
     depends: [watch]
+    hidden: true
     components:
       - { hardware_interface: "ur_hw", controller : "joint_impedance_controller"}
 
-  - name: zz_jjog
+  - name: jjog
     depends: [ watch ]
+    hidden: true
     components:
       - {hardware_interface: "ur_hw", controller: "jjog"}
 
-  - name: zz_cjog
+  - name: cjog
     depends: [ watch ]
+    hidden: true
     components:
       - {hardware_interface: "ur_hw", controller: "c_vel"}
 
   - name: simple_touch
-    depends: [ zz_cjog ]
+    depends: [ cjog ]
     components:
       - {hardware_interface: "ft_hw", controller: "simple_touch"}
 
   - name: simple_touch_impedance
-    depends: [ zz_cart_impedance ]
+    depends: [ cart_impedance ]
     components:
     - {hardware_interface: "ft_hw", controller: "simple_touch"}
     - {hardware_interface: "plan_hw", controller: "c_vel"}
 
-
-#  - name: cart_vel_impedance
-#    depends: [ zz_cart_impedance ]
-#    components:
-#    - {hardware_interface: "plan_hw", controller: "c_vel"}
+  - name: cart_vel_impedance
+    depends: [ cart_impedance ]
+    hidden: true
+    components:
+    - {hardware_interface: "plan_hw", controller: "c_vel"}
 
   - name: gt
     depends: [ watch ]
@@ -79,16 +83,16 @@ control_configurations:
     - {hardware_interface: "plan_hw", controller: "microint"}
     
   - name: thor_cimp
-    depends: [ zz_cart_impedance ]
+    depends: [ cart_impedance ]
     components:
     - {hardware_interface: "plan_hw", controller: "microint"}
     
   - name: thor_jimp
-    depends: [ zz_joint_impedance ]
+    depends: [ joint_impedance ]
     components:
     - {hardware_interface: "plan_hw", controller: "microint"}
 
 configuration_dispatches:
 - { name: watch,  at: 1.0 }
-- { name: thor ,  at: 2.0 }
+#- { name: thor ,  at: 2.0 }
 
