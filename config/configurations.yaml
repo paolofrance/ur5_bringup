@@ -4,53 +4,6 @@ control_configurations:
       - {hardware_interface: "ur_hw", controller : "js_pub"}
       - {hardware_interface: "ft_hw", controller : "ft_pub", runtime_check: false}
 
-  - name: ctrl
-    depends: [watch]
-    components:
-      - { hardware_interface: "ur_hw", controller : "p_j"}
-      
-  - name: cart_impedance
-    depends: [watch]
-    hidden: true
-    components:
-      - {hardware_interface: "ur_hw", controller : "c_pose_pub"}
-      - { hardware_interface: "ur_hw", controller : "cart_impedance_controller"}
-      
-  - name: joint_impedance
-    depends: [watch]
-    hidden: true
-    components:
-      - { hardware_interface: "ur_hw", controller : "joint_impedance_controller"}
-
-  - name: jjog
-    depends: [ watch ]
-    hidden: true
-    components:
-      - {hardware_interface: "ur_hw", controller: "jjog"}
-
-  - name: cjog
-    depends: [ watch ]
-    hidden: true
-    components:
-      - {hardware_interface: "ur_hw", controller: "c_vel"}
-
-  - name: simple_touch
-    depends: [ cjog ]
-    components:
-      - {hardware_interface: "ft_hw", controller: "simple_touch"}
-
-  - name: simple_touch_impedance
-    depends: [ cart_impedance ]
-    components:
-    - {hardware_interface: "ft_hw", controller: "simple_touch"}
-    - {hardware_interface: "plan_hw", controller: "c_vel"}
-
-  - name: cart_vel_impedance
-    depends: [ cart_impedance ]
-    hidden: true
-    components:
-    - {hardware_interface: "plan_hw", controller: "c_vel"}
-
   - name: gt
     depends: [ watch ]
     components:
@@ -76,23 +29,26 @@ control_configurations:
     components:
     - {hardware_interface: "ur_hw", controller: "imp_var_k"}
 
+  - name: imp_NO_k
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "imp_NO_k"}
 
-  - name: thor
-    depends: [ ctrl ]
+  - name: non_coop_IOC
+    depends: [ watch ]
     components:
-    - {hardware_interface: "plan_hw", controller: "microint"}
-    
-  - name: thor_cimp
-    depends: [ cart_impedance ]
+    - {hardware_interface: "ur_hw", controller: "non_coop_ioc"}
+
+  - name: LQR_impedance
+    depends: [ watch ]
     components:
-    - {hardware_interface: "plan_hw", controller: "microint"}
-    
-  - name: thor_jimp
-    depends: [ joint_impedance ]
+    - {hardware_interface: "ur_hw", controller: "LQR_impedance"}
+
+  - name: freq_est
+    depends: [ watch ]
     components:
-    - {hardware_interface: "plan_hw", controller: "microint"}
+    - {hardware_interface: "ur_hw", controller: "freq_est"}
 
 configuration_dispatches:
 - { name: watch,  at: 1.0 }
-#- { name: thor ,  at: 2.0 }
 
