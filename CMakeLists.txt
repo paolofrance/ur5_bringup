@@ -6,7 +6,6 @@ find_package(catkin REQUIRED
   roscpp
   configuration_msgs
   moveit_planning_helper
-  simple_touch_controller_msgs
   )
 
 
@@ -15,6 +14,3 @@ catkin_package()
 include_directories(
 ${catkin_INCLUDE_DIRS}
 )
-add_executable(control_switch src/control_switch.cpp)
-target_link_libraries(control_switch ${catkin_LIBRARIES})
-

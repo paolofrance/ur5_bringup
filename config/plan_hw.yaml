@@ -1,0 +1,93 @@
+plan_hw:
+  type: cnr/control/TopicRobotHW
+  appenders: [file, screen]
+  levels: [trace, info]
+  pattern_layout: "[%5p][%d{HH:mm:ss,SSS}][%M:%L][%c] %m%n"
+  file_name: "plan_hw"
+  joint_names:
+  - shoulder_pan_joint
+  - shoulder_lift_joint
+  - elbow_joint
+  - wrist_1_joint
+  - wrist_2_joint
+  - wrist_3_joint
+
+  base_link  : "base_link"
+  tool_link  : "tool0"
+  robot_description_param: /robot_description
+  robot_description_planning_param: /robot_description_planning
+
+  feedback_joint_state_topic: /joint_states
+  command_joint_state_topic:  /joint_pos_target
+  sampling_period: 0.005
+  diagnostic_period: 0.1
+  feedback_joint_state_timeout: 20
+  maximum_missing_cycles: 100
+
+  remap_source_args:
+  - "/plan_hw/microint/follow_joint_trajectory/cancel"
+  - "/plan_hw/microint/follow_joint_trajectory/feedback"
+  - "/plan_hw/microint/follow_joint_trajectory/goal"
+  - "/plan_hw/microint/follow_joint_trajectory/result"
+  - "/plan_hw/microint/follow_joint_trajectory/status"
+  - "/plan_hw/gt/target_cart_twist"
+  - "/plan_hw/gt/current_pose"
+
+  remap_target_args:
+  - "scaled_pos_joint_traj_controller/follow_joint_trajectory/cancel"
+  - "scaled_pos_joint_traj_controller/follow_joint_trajectory/feedback"
+  - "scaled_pos_joint_traj_controller/follow_joint_trajectory/goal"
+  - "scaled_pos_joint_traj_controller/follow_joint_trajectory/result"
+  - "scaled_pos_joint_traj_controller/follow_joint_trajectory/status"
+  - "target_cart_twist"
+  - "/current_pose"
+
+  microint:
+    type: "cnr/control/FollowJointTrajectoryPosVelEffController"
+    controlled_joints: all
+    interpolator: "thor/ThorPrefilter"
+    regulator: "regulator/fake_regulator"
+    spline_order: 1
+
+
+  c_vel:
+    type: cnr/control/CartesianVelocityController
+    controlled_joints : all
+    kin_update_period : 0.008
+    target_twist_topic: "/target_cart_twist"  # setpoint twist topic name
+
+  gt:
+    type: cnr/control/GtTrajDeformation
+    controlled_joints: all
+    exponential: 4
+    min_val: 29
+    kin_update_period: 0.008
+
+    Q_hat: [50, 50, 50, 1, 1, 1]
+    R_hat: [1 ,  1,  1, 0, 0, 0]
+    Qr   : [10, 10, 20, 1, 1, 1]
+    Rr   : [ 0,  0,  0, .5, .5, .5]
+
+    M_r: [6,6,6,1,1,1]
+    K_r: [0,0,6,0,0,0]
+    D_r: [20,20,1.5,1,1,1]
+    damping_is_ratio: false
+
+    robot_base_frame  : ur5_base_link
+    robot_tip_frame   : ur5_tool0
+    force_sensor_frame: robotiq_ft_frame_id
+
+    wrench_deadband: [3,3,3,5,5,5]
+    omega_wrench: 150
+    use_filtered_wrench: true
+    external_wrench_topic: "/robotiq_ft_wrench"
+
+    pose_target: "/pose_target"
+
+    sigmoid_width: 3
+    sigmoid_half_x: 2
+    sigmoid_height: 0.98
+    sigmoid_max_y: 0.99
+    #sigmoid_height: 0
+    #sigmoid_max_y: .99
+

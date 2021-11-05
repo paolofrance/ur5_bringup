@@ -2,7 +2,7 @@ control_configurations:
   - name: watch
     components:
       - {hardware_interface: "ur_hw", controller : "js_pub"}
-      - {hardware_interface: "ft_hw", controller : "ft_pub", runtime_check: false}
+      #- {hardware_interface: "ft_hw", controller : "ft_pub", runtime_check: false}
 
   - name: gt
     depends: [ watch ]
@@ -49,6 +49,17 @@ control_configurations:
     components:
     - {hardware_interface: "ur_hw", controller: "freq_est"}
 
+  - name: ctrl
+    depends: [watch]
+    components:
+      - { hardware_interface: "ur_hw", controller : "p_j"}
+
+  - name: planner
+    depends: [ ctrl ]
+    components:
+    - {hardware_interface: "plan_hw", controller: "microint"}
+
 configuration_dispatches:
-- { name: watch,  at: 1.0 }
+  - { name: watch,  at: 1.0 }
+  - { name: planner,  at: 2.0 }
 

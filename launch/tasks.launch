@@ -1,8 +1,0 @@
-<launch>
-
-<rosparam command="load" file="$(find ur5_bringup)/config/tasks.yaml" />
-<node name="control_switch" pkg="ur5_bringup" type="control_switch" />
-
-</launch>
-
-

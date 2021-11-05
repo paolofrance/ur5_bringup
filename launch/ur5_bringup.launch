@@ -5,7 +5,7 @@
   <arg name="plot_traj" default="true" />
 
 
-  <include file="$(find ur5_bringup)/launch/planning_context.launch" >
+  <include file="$(find ur5_moveit_lab)/launch/planning_context.launch" >
     <arg name="load_robot_description" value="true" />
   </include>
 
@@ -33,14 +33,14 @@
     <rosparam command="load" file="$(find ur5_bringup)/config/configurations.yaml" />
   </node>
 
-  <rosparam command="load" file="$(find ur5_bringup)/config/gt_hw.yaml" />
-<!--  <rosparam command="load" file="$(find ur5_bringup)/config/ur5_hw.yaml" />-->
   <param  ns="/ur5_hw" name="script_file" value="(find ur_robot_driver)/resources/ros_control.urscript" />
   <param  ns="/ur5_hw" name="output_recipe_file" value="(find ur_robot_driver)/resources/rtde_output_recipe.txt" />
   <param  ns="/ur5_hw" name="input_recipe_file" value="(find ur_robot_driver)/resources/rtde_input_recipe.txt" />
   <param  ns="/ur5_hw" name="ext_control_path" value="/programs/exc.urp" />
 
-  <rosparam command="load" file="$(find ur5_bringup)/config/ft_hw.yaml" />
+  <rosparam command="load" file="$(find ur5_bringup)/config/gt_hw.yaml" />
+  <rosparam command="load" file="$(find ur5_bringup)/config/plan_hw.yaml" />
+  <!--  <rosparam command="load" file="$(find ur5_bringup)/config/ft_hw.yaml" />-->
 
   <node pkg="cnr_configuration_manager" type="dispatcher" name="configuration_dispatcher" output="screen" >
     <rosparam>
@@ -60,14 +60,14 @@
     <arg name="debug" value="$(arg debug)"/>
   </include>
 
-  <include file="$(find ur5_lab_moveit)/launch/move_group.launch">
+  <include file="$(find ur5_moveit_lab)/launch/move_group.launch">
     <arg name="allow_trajectory_execution" value="true"/>
     <arg name="load_robot_description" value="false"/>
   </include>
 
 <!--    <node name="ft_sensor" pkg="robotiq_ft_sensor" type="rq_sensor" args="/dev/ttyUSB0" />-->
 
-    <include file="$(find traj_plotter)/launch/traj_plotter.launch" if="$(arg plot_traj)"/>
+<!--    <include file="$(find traj_plotter)/launch/traj_plotter.launch" if="$(arg plot_traj)"/>-->
 
 
 </launch>
