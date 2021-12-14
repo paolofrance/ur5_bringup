@@ -34,11 +34,11 @@ plan_hw:
   - "/plan_hw/gt/current_pose"
 
   remap_target_args:
-  - "scaled_pos_joint_traj_controller/follow_joint_trajectory/cancel"
-  - "scaled_pos_joint_traj_controller/follow_joint_trajectory/feedback"
-  - "scaled_pos_joint_traj_controller/follow_joint_trajectory/goal"
-  - "scaled_pos_joint_traj_controller/follow_joint_trajectory/result"
-  - "scaled_pos_joint_traj_controller/follow_joint_trajectory/status"
+  - "ur5_moveit_lab/follow_joint_trajectory/cancel"
+  - "ur5_moveit_lab/follow_joint_trajectory/feedback"
+  - "ur5_moveit_lab/follow_joint_trajectory/goal"
+  - "ur5_moveit_lab/follow_joint_trajectory/result"
+  - "ur5_moveit_lab/follow_joint_trajectory/status"
   - "target_cart_twist"
   - "/current_pose"
 

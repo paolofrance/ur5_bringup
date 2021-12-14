@@ -2,7 +2,17 @@ control_configurations:
   - name: watch
     components:
       - {hardware_interface: "ur_hw", controller : "js_pub"}
-      #- {hardware_interface: "ft_hw", controller : "ft_pub", runtime_check: false}
+      - {hardware_interface: "ft_hw", controller : "ft_pub", runtime_check: false}
+
+  - name: cart_impedance
+    depends: [watch]
+    components:
+    - { hardware_interface: "ur_hw", controller : "cart_impedance_controller"}
+
+  - name: joint_impedance
+    depends: [watch]
+    components:
+      - { hardware_interface: "ur_hw", controller : "joint_impedance_controller"}
 
   - name: gt
     depends: [ watch ]
@@ -43,6 +53,11 @@ control_configurations:
     depends: [ watch ]
     components:
     - {hardware_interface: "ur_hw", controller: "LQR_impedance"}
+    
+  - name: ss_impedance
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "ss_impedance"}
 
   - name: freq_est
     depends: [ watch ]

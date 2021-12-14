@@ -1,0 +1,52 @@
+control_configurations:
+  - name: watch
+    components:
+      - {hardware_interface: "ur_hw", controller : "js_pub"}
+      - {hardware_interface: "ur_hw", controller : "pose_pub"}
+      - {hardware_interface: "ft_hw", controller : "ft_pub", runtime_check: false}
+      
+  - name: cart_impedance
+    depends: [watch]
+    components:
+    - { hardware_interface: "ur_hw", controller : "cart_impedance_controller"}
+    
+  - name: ss_impedance
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "ss_impedance"}
+    
+  - name: lqr_impedance
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "lqr_impedance"}
+    
+  - name: ekf_impedance
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "ekf_impedance"}
+
+  - name: ctrl
+    depends: [watch]
+    hidden: true
+    components:
+      - { hardware_interface: "ur_hw", controller : "p_j"}
+
+  - name: planner
+    depends: [ ctrl ]
+    components:
+    - {hardware_interface: "plan_hw", controller: "microint"}
+    
+  - name: planner_cimp
+    depends: [ cart_impedance ]
+    components:
+    - {hardware_interface: "plan_hw", controller: "microint"}
+    
+  - name: planner_ssimp
+    depends: [ ss_impedance ]
+    components:
+    - {hardware_interface: "plan_hw", controller: "microint"}
+
+configuration_dispatches:
+  - { name: watch,  at: 1.0 }
+  - { name: planner,  at: 2.0 }
+

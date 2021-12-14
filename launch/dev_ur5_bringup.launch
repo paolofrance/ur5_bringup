@@ -4,9 +4,7 @@
   <arg name="use_rviz" default="true" />
   <arg name="plot_traj" default="true" />
 
-  <rosparam command="load" file="$(find ur5_bringup)/config/gt_hw.yaml" />
-  <rosparam command="load" file="$(find ur5_bringup)/config/plan_hw.yaml" />
-  <rosparam command="load" file="$(find ur5_bringup)/config/ft_hw.yaml" />
+  <rosparam command="load" file="$(find ur5_bringup)/config/dev_hw.yaml" />
 
   <include file="$(find ur5_moveit_lab)/launch/planning_context.launch" >
     <arg name="load_robot_description" value="true" />
@@ -31,7 +29,7 @@
       append_to_file: true
       pattern_layout: "[%5p][%d{HH:mm:ss,SSS}][%M:%04L][%c] %m%n"
     </rosparam>
-    <rosparam command="load" file="$(find ur5_bringup)/config/configurations.yaml" />
+    <rosparam command="load" file="$(find ur5_bringup)/config/dev_configurations.yaml" />
   </node>
 
   <node pkg="cnr_configuration_manager" type="dispatcher" name="configuration_dispatcher" output="screen" >
