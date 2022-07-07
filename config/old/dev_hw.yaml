@@ -1,0 +1,495 @@
+ur_hw:
+  type: cnr_ur_driver/UrCB3HardwareInterface
+#  type: ur_driver/HardwareInterface
+  appenders: [file, screen]
+  levels: [trace, info]
+  pattern_layout: "[%5p][%d{HH:mm:ss,SSS}][%M:%L][%c] %m%n"
+  file_name: "ur_hw"
+  default_throttle_time: 20.0
+  sampling_period: 0.008
+  joint_names:
+  - shoulder_pan_joint
+  - shoulder_lift_joint
+  - elbow_joint
+  - wrist_1_joint
+  - wrist_2_joint
+  - wrist_3_joint
+
+  joints:
+  - shoulder_pan_joint
+  - shoulder_lift_joint
+  - elbow_joint
+  - wrist_1_joint
+  - wrist_2_joint
+  - wrist_3_joint
+
+  robot_ip: 192.168.254.30
+  reverse_port: 50001
+  script_sender_port: 50002
+  tf_prefix: ''
+  headless_mode: false
+  script_file:        /home/marie/cnr_ws/src/devices/robots/ur/Universal_Robots_ROS_Driver/ur_robot_driver/resources/ros_control.urscript
+  output_recipe_file: /home/marie/cnr_ws/src/devices/robots/ur/Universal_Robots_ROS_Driver/ur_robot_driver/resources/rtde_output_recipe.txt
+  input_recipe_file:  /home/marie/cnr_ws/src/devices/robots/ur/Universal_Robots_ROS_Driver/ur_robot_driver/resources/rtde_input_recipe.txt
+  ext_control_path: /programs/exc.urp
+  use_tool_communication: false
+  tool_voltage: 0
+  tool_parity: 0
+  tool_baud_rate: 115200
+  tool_stop_bits: 1
+  tool_rx_idle_chars: 1.5
+  tool_tx_idle_chars: 3.5
+
+  base_link  : "base_link"
+  tool_link  : "tool0"
+  robot_description_param: /robot_description
+  robot_description_planning_param: /robot_description_planning
+
+  remap_source_args:
+  - "/ur_hw/js_pub/joint_states"
+  - "/ur_hw/pose_pub/cartesian_pose"
+  - "/ur_hw/lqr_impedance/filtered_wrench_base"
+  - "/ur_hw/ekf_impedance/filtered_wrench_base"
+  - "/ur_hw/ioc_cgt/filtered_wrench_base"
+  - "/ur_hw/ioc_cgt/wrench_base"
+  - "/ur_hw/lqi_impedance/filtered_wrench_base"
+  - "/ur_hw/cgt_impedance/filtered_wrench_base"
+
+  remap_target_args:
+  - "/joint_states"
+  - "/cartesian_pose"
+  - "/filtered_wrench_base"
+  - "/filtered_wrench_base"
+  - "/filtered_wrench_base"
+  - "/wrench_base"
+  - "/filtered_wrench_base"
+  - "/filtered_wrench_base"
+
+  js_pub:
+    type: cnr/control/JointStatePublisher
+    controlled_joints: all
+
+  pose_pub:
+    type: cnr/control/CartStatePublisher
+    controlled_joints: all
+    robot_base_frame : base_link
+    robot_tip_frame  : tip
+
+  p_j:
+    type: cnr/control/OpenLoopPositionController
+    setpoint_topic_name: /joint_pos_target
+    controlled_joints: all
+    kin_update_period : 0.008
+
+  cart_impedance_controller:
+    # REQUIRED:
+    type                  : "cnr_control/CartImpedanceController"
+    inertia               : [ 10, 10, 10, 1, 1, 1]      # in [kg, kg, kg, kg*m^2, kg*m^2, kg*m^2]
+    #stiffness             : [100,100,100,10,10,10]   # in [N/m, N/m, N/m, Nm/rad, Nm/rad, Nm/rad]
+    stiffness             : [100,100,100,10,10,10]   # in [N/m, N/m, N/m, Nm/rad, Nm/rad, Nm/rad]
+    damping               : [20,20,20, 20,20,20]     # in [N/(m/s), N/(m/s), N/(m/s), Nm/(rad/s), Nm/rad/s), Nm/rad/s)]
+    joint_target_topic    : /joint_pos_target              # setpoint joint topic name
+    base_frame            : base_link                  # name of the base link
+    tool_frame            : robotiq_ft_frame_id                      # name of the tool link
+    sensor_frame          : robotiq_ft_frame_id            # name of the sensor link (has to be integral with tool_frame)
+
+    # OPTIONAL:
+    base_is_reference     : false                          # true: impedance in base_frame, false: impedance in tool_frame [DEFAULT: true]
+    wrench_deadband       : [0.1, 0.1, 0.1, 0.0, 0.0, 0.0] # deadband on the wrench topic [DEFAULT: zero]
+    external_wrench_topic : /robotiq_ft_wrench             # wrench topic name [DEFAULT: ~/external_wrench]
+    controlled_joints     : all
+    damping_ratio         : [.9,.9,.9,.9,.9,.9]               # adimensional damping ratio. NOTE: possibile alternative to speficy damping. If specified, it is used instead of the damping. In this case the stiffness should be positive.
+
+  ss_impedance:
+    type: cnr/control/SSCartImpedance
+    controlled_joints: all
+    kin_update_period: 0.008
+    
+    robot_base_frame  : base_link
+    robot_tip_frame   : tip
+    force_sensor_frame: robotiq_ft_frame_id
+    
+    
+    use_cartesian_reference: false                 # are you going to use a reference Pose or JointState?  default: false
+    joint_target_topic:     "/joint_pos_target"   # incoming joints setpoint topic 
+    pose_target:            "/target_cart_pose"   # incoming pose setpoint topic
+
+    external_wrench_topic: "/robotiq_ft_wrench"   # topic for reading the wrench
+    wrench_deadband: [5,5,5,.1,.1,.1]             # deadbnd in which the force is ignored
+    use_filtered_wrench: true                     # do you want to filter the wrench?
+    omega_wrench: 500                             # omega filtering
+
+    M_r: [10,10,10,10,10,10]          # diagonal inertia matrix values
+    K_r: [100,100,100,10,10,10]       # diagonal stiffness matrix values
+    D_r: [50,50,50,10,10,10]          # diagonal damping matrix values
+    damping_is_ratio: false           # is the damping defined above absolute or ratio?
+    
+  lqr_impedance:
+    type: cnr/control/LQRCartImpedance
+    controlled_joints: all
+    kin_update_period: 0.008
+    
+    robot_base_frame  : base_link
+    robot_tip_frame   : tip
+    force_sensor_frame: robotiq_ft_frame_id
+    
+    use_cartesian_reference: true                 # are you going to use a reference Pose or JointState?  default: false
+    joint_target_topic:     "/joint_pos_target"   # incoming joints setpoint topic 
+    pose_target:            "/target_cart_pose"   # incoming pose setpoint topic
+
+    external_wrench_topic: "/robotiq_ft_wrench"   # topic for reading the wrench
+    wrench_deadband: [1,1,1,.1,.1,.1]             # deadbnd in which the force is ignored
+    use_filtered_wrench: true                     # do you want to filter the wrench?
+    omega_wrench: 500                             # omega filtering
+
+    M_r: [10,10,10,10,10,10]          # diagonal inertia matrix values
+    K_r: [10,10,10,1000,1000,1000]       # diagonal stiffness matrix values
+    D_r: [.9,.9,.9,1000,1000,1000]          # diagonal damping matrix values
+    damping_is_ratio: true           # is the damping defined above absolute or ratio?
+
+    Q: [1,1,0,1,1,1,.01,.01,.01,.01,.01,.01]    # weight state matrix
+    R: [.0001,.0001,.0001,.0001,.0001,.0001]                      # weight control matrix
+    
+    M_l: [.1,.1,.0001,.1,.1,.1]          # diagonal inertia matrix values
+  
+  
+  ekf_impedance:
+    type: cnr/control/EKFCartImpedance
+    controlled_joints: all
+    kin_update_period: 0.008
+    
+    robot_base_frame  : base_link
+    robot_tip_frame   : robotiq_ft_frame_id
+    force_sensor_frame: robotiq_ft_frame_id
+    
+    use_cartesian_reference: true                 # are you going to use a reference Pose or JointState?  default: false
+    joint_target_topic:     "/joint_pos_target"   # incoming joints setpoint topic 
+    pose_target:            "/target_cart_pose"   # incoming pose setpoint topic
+
+    external_wrench_topic: "/robotiq_ft_wrench"   # topic for reading the wrench
+    wrench_deadband: [.5,.5,1,.1,.1,.1]             # deadbnd in which the force is ignored
+    use_filtered_wrench: true                     # do you want to filter the wrench?
+    omega_wrench: 100                             # omega filtering
+
+    M_r: [10,10,10,10,10,10]          # diagonal inertia matrix values
+    K_r: [0,1000,1000,1000,1000,1000]       # diagonal stiffness matrix values
+    D_r: [100,1000,1000,1000,1000,1000]          # diagonal damping matrix values
+    damping_is_ratio: false           # is the damping defined above absolute or ratio?
+
+    Q: [1,1,1,1,1,1,1,1,1,1,1,1]    # weight state matrix
+    R: [.001,.1,.1,.1,.1,.1]                      # weight control matrix
+    
+    P_ekf: [0.1,0.1,1000,1000]    # weight state matrix
+    Q_ekf: [0.001, 0.001, 100000, 100000]
+    R_ekf: [0.001, 0.001]                      # weight control matrix
+  
+  
+  ioc_cgt:
+    type: cnr/control/IocCgt
+    controlled_joints: all
+    kin_update_period: 0.008
+    
+    window: 50
+    wait_window: 60
+    reference_axis: z
+    
+    robot_base_frame  : base_link
+    robot_tip_frame   : tip
+    force_sensor_frame: robotiq_ft_frame_id
+    
+    use_cartesian_reference: true                 # are you going to use a reference Pose or JointState?  default: false
+    joint_target_topic:     "/joint_pos_target"   # incoming joints setpoint topic 
+    pose_target:            "/target_cart_pose"   # incoming pose setpoint topic
+
+    external_wrench_topic: "/robotiq_ft_wrench"   # topic for reading the wrench
+    wrench_deadband: [1,1,1,.1,.1,.1]             # deadbnd in which the force is ignored
+    use_filtered_wrench: false                     # do you want to filter the wrench?
+    omega_wrench: 500                             # omega filtering
+
+    M_r: [10,10,10,10,10,10]          # diagonal inertia matrix values
+    K_r: [1000,1000,1000,1000,1000,1000]       # diagonal stiffness matrix values
+    D_r: [500,500,500,1000,1000,1000]          # diagonal damping matrix values
+    damping_is_ratio: false           # is the damping defined above absolute or ratio?
+
+    Q: [1,1,1,1,1,1,.01,.01,.01,.01,.01,.01]    # weight state matrix
+    R: [.001,.001,.001,.0001,.0001,.0001]                      # weight control matrix
+  
+  
+  
+  lqi_impedance:
+    type: cnr/control/LQICartImpedance
+    controlled_joints: all
+    kin_update_period: 0.008
+    
+    robot_base_frame  : base_link
+    robot_tip_frame   : tip
+    force_sensor_frame: robotiq_ft_frame_id
+    
+    use_cartesian_reference: true                 # are you going to use a reference Pose or JointState?  default: false
+    joint_target_topic:     "/joint_pos_target"   # incoming joints setpoint topic 
+    pose_target:            "/target_cart_pose"   # incoming pose setpoint topic
+
+    external_wrench_topic: "/robotiq_ft_wrench"   # topic for reading the wrench
+    wrench_deadband: [1,1,1,.1,.1,.1]             # deadbnd in which the force is ignored
+    use_filtered_wrench: true                     # do you want to filter the wrench?
+    omega_wrench: 500                             # omega filtering
+
+    M_r: [10,10,10,10,10,10]          # diagonal inertia matrix values
+    K_r: [1000,1000,0,1000,1000,1000]       # diagonal stiffness matrix values
+    D_r: [1000,1000,50,1000,1000,1000]          # diagonal damping matrix values
+    damping_is_ratio: false           # is the damping defined above absolute or ratio?
+    
+    M_l: [.1,.1,1.1,.1,.1,.1]          # diagonal inertia matrix values
+    
+    Q: [1,1,1,1,1,1,.01,.01,.01,.01,.01,.01, .1,.1,.1,.1,.1,.1]    # weight state matrix
+    R: [.0001,.0001,.001,.0001,.0001,.0001]                      # weight control matrix
+    
+  cgt_impedance:
+    type: cnr/control/CGTCartImpedance
+    controlled_joints: all
+    kin_update_period: 0.008
+    
+    robot_base_frame  : base_link
+    robot_tip_frame   : tip
+    force_sensor_frame: robotiq_ft_frame_id
+    
+    use_cartesian_reference: true                 # are you going to use a reference Pose or JointState?  default: false
+    joint_target_topic:     "/joint_pos_target"   # incoming joints setpoint topic 
+    pose_target:            "/target_cart_pose"   # incoming pose setpoint topic
+
+    external_wrench_topic: "/robotiq_ft_wrench"   # topic for reading the wrench
+    wrench_deadband: [1,1,1,.1,.1,.1]             # deadbnd in which the force is ignored
+    use_filtered_wrench: true                     # do you want to filter the wrench?
+    omega_wrench: 500                             # omega filtering
+
+    M_r: [10,10,10,10,10,10]          # diagonal inertia matrix values
+    K_r: [1000,1000,0,1000,1000,1000]       # diagonal stiffness matrix values
+    D_r: [1000,1000,50,1000,1000,1000]          # diagonal damping matrix values
+    damping_is_ratio: false           # is the damping defined above absolute or ratio?
+    
+    M_l: [.1,.1,0.001,.1,.1,.1]          # diagonal inertia matrix values
+    
+    Qh: [1,1,1,1,1,1,.001,.01, 0.01,.01,.01,.01, 0,.1,.0,.1,.1,.1]  # human weight state matrix
+    Rh: [.0001,.0001,.0002,.0001,.0001,.0001]                      # human weight control matrix
+    
+    Qr: [1,1,1,1,1,1,.001,.01, 0.01,.01,.01,.01, 0,.1,.0,.1,.1,.1]  # robot weight state matrix
+    Rr: [.0001,.0001,.0002,.0001,.0001,.0001]                      # robot weight control matrix
+    
+    alpha: 0.5
+    window: 25
+    wait_window: 40
+    reference_axis: z
+    
+  cgt_impedance_onedof:
+    type: cnr/control/CGTCartImpedanceOneDof
+    controlled_joints: all
+    kin_update_period: 0.008
+    
+    robot_base_frame  : base_link
+    robot_tip_frame   : tip
+    force_sensor_frame: robotiq_ft_frame_id
+    
+    use_cartesian_reference: true                 # are you going to use a reference Pose or JointState?  default: false
+    joint_target_topic:     "/joint_pos_target"   # incoming joints setpoint topic 
+    pose_target:            "/target_cart_pose"   # incoming pose setpoint topic
+
+    external_wrench_topic: "/robotiq_ft_wrench"   # topic for reading the wrench
+    wrench_deadband: [1,1,1,.1,.1,.1]             # deadbnd in which the force is ignored
+    use_filtered_wrench: true                     # do you want to filter the wrench?
+    omega_wrench: 500                             # omega filtering
+
+    M_r: 10          # diagonal inertia matrix values
+    K_r: 0       # diagonal stiffness matrix values
+    D_r: 75          # diagonal damping matrix values
+    damping_is_ratio: false           # is the damping defined above absolute or ratio?
+    
+    M_l: 0          # diagonal inertia matrix values
+    
+    Rh_sigma: 0.0001
+    alpha_p: 0.573
+    alpha_m: 0.61
+    
+    Qh: [1,0]
+    Rh: 0.0001
+    Qr: [1,0]
+    Rr: 0.00008
+    alpha: 0.502
+      
+    window: 25
+    wait_window: 40
+    reference_axis: z
+    
+    robot_active: true
+    
+    
+  lqr_cgt:
+    type: cnr/control/GTTrajTrack
+    controlled_joints: all
+    kin_update_period: 0.008
+    
+    robot_base_frame  : base_link
+    robot_tip_frame   : tip
+    force_sensor_frame: robotiq_ft_frame_id
+    
+    use_cartesian_reference: true                 # are you going to use a reference Pose or JointState?  default: false
+    joint_target_topic:     "/joint_pos_target"   # incoming joints setpoint topic 
+    pose_target:            "/target_cart_pose"   # incoming pose setpoint topic
+
+    external_wrench_topic: "/robotiq_ft_wrench"   # topic for reading the wrench
+    wrench_deadband: [1,1,1,.1,.1,.1]             # deadbnd in which the force is ignored
+    use_filtered_wrench: true                     # do you want to filter the wrench?
+    omega_wrench: 500                             # omega filtering
+
+    M_r: 10          # diagonal inertia matrix values
+    K_r: 0       # diagonal stiffness matrix values
+    D_r: 50          # diagonal damping matrix values
+    damping_is_ratio: false           # is the damping defined above absolute or ratio?    
+    
+    Qhh: [1,0.0001]
+    Qhr: [0,0]
+    
+    Qrh: [0,0]
+    Qrr: [1,0.0001]
+    
+    Rh: 0.0005
+    Rr: 0.0005
+    
+    control_type: 1
+    
+    alpha: 0.5
+    
+    reference_axis: x
+    
+  gt_traj_arb:
+    type: cnr/control/GTTrajArbitration
+    controlled_joints: all
+    kin_update_period: 0.008
+    
+    robot_base_frame  : base_link
+    robot_tip_frame   : tip
+    force_sensor_frame: robotiq_ft_frame_id
+    
+    use_cartesian_reference: true
+    joint_target_topic:     "/joint_pos_target"
+    pose_target:            "/target_cart_pose"
+    
+    external_wrench_topic: "/robotiq_ft_wrench"
+    wrench_deadband: [1,1,1,1,1,1]
+    use_filtered_wrench: true
+    omega_wrench: 500
+    
+    M_r: [10,10,10,10,10,10]
+    K_r: [100,100,100,100,100,100]
+    D_r: [50,50,50,50,50,50]
+    damping_is_ratio: false
+    
+    Qhh: [1,0.0001]
+    Qhr: [0,0]
+    
+    Qrh: [0,0]
+    Qrr: [1,0.0001]
+    
+    Rh: 0.0005
+    Rr: 0.0005
+    
+    control_type: 1
+    
+    alpha: 0.5
+    
+    reference_axis: x
+    
+#************************ FT Hw ******************************************
+
+ft_hw:
+  type: cnr/control/RobotiqForceTorqueHw
+  appenders: [file, screen]
+  levels: [trace, info]
+  pattern_layout: "[%5p][%d{HH:mm:ss,SSS}][%M:%L][%c] %m%n"
+  file_name: "ft_hw"
+  default_throttle_time: 20.0
+  sampling_period: 0.01
+  init_sensor: true
+
+  controlled_resource: robotiq_ft_sensor
+
+
+  remap_source_args:
+  - "/ft_hw/simple_touch/target_cart_twist"
+  - "/ft_hw/robotiq_ft_sensor"
+
+  remap_target_args:
+    - "/target_cart_twist"
+    - "/robotiq_ft_wrench"
+
+  ft_pub:
+    type: force_torque_sensor_controller/ForceTorqueSensorController
+    publish_rate: 100
+  
+#************************ Plan Hw ******************************************
+
+plan_hw:
+  type: cnr/control/TopicRobotHW
+  appenders: [file, screen]
+  levels: [trace, info]
+  pattern_layout: "[%5p][%d{HH:mm:ss,SSS}][%M:%L][%c] %m%n"
+  file_name: "plan_hw"
+  joint_names:
+  - shoulder_pan_joint
+  - shoulder_lift_joint
+  - elbow_joint
+  - wrist_1_joint
+  - wrist_2_joint
+  - wrist_3_joint
+
+  base_link  : "base_link"
+  tool_link  : "tool0"
+  robot_description_param: /robot_description
+  robot_description_planning_param: /robot_description_planning
+
+  feedback_joint_state_topic: /joint_states
+  command_joint_state_topic:  /joint_pos_target
+  sampling_period: 0.005
+  diagnostic_period: 0.1
+  feedback_joint_state_timeout: 20
+  maximum_missing_cycles: 100
+
+  remap_source_args:
+  - "/plan_hw/microint/follow_joint_trajectory/cancel"
+  - "/plan_hw/microint/follow_joint_trajectory/feedback"
+  - "/plan_hw/microint/follow_joint_trajectory/goal"
+  - "/plan_hw/microint/follow_joint_trajectory/result"
+  - "/plan_hw/microint/follow_joint_trajectory/status"
+  - "/plan_hw/gt/target_cart_twist"
+  - "/plan_hw/gt/current_pose"
+
+  remap_target_args:
+  - "ur5_moveit_lab/follow_joint_trajectory/cancel"
+  - "ur5_moveit_lab/follow_joint_trajectory/feedback"
+  - "ur5_moveit_lab/follow_joint_trajectory/goal"
+  - "ur5_moveit_lab/follow_joint_trajectory/result"
+  - "ur5_moveit_lab/follow_joint_trajectory/status"
+  - "target_cart_twist"
+  - "/current_pose"
+
+  microint:
+    type: "cnr/control/FollowJointTrajectoryPosVelEffController"
+    controlled_joints: all
+    interpolator: "thor/ThorPrefilter"
+    regulator: "regulator/fake_regulator"
+    spline_order: 1
+
+  
+  
+  
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

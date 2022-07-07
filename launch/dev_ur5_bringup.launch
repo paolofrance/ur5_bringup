@@ -55,6 +55,7 @@
   </include>
 
 
+<!--   <node launch-prefix="$(arg launch_prefix)" pkg="cgt_cart_impedance" type="ioc_srv.py" name="ioc_srv" output="screen"/> -->
 <!--     <node name="ft_sensor" pkg="robotiq_ft_sensor" type="rq_sensor" args="/dev/ttyUSB0" /> -->
 
 <!--    <include file="$(find traj_plotter)/launch/traj_plotter.launch" if="$(arg plot_traj)"/>-->

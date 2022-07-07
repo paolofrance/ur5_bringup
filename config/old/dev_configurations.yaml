@@ -1,0 +1,96 @@
+control_configurations:    
+  - name: watch
+    components:
+      - {hardware_interface: "ur_hw", controller : "js_pub"}
+      - {hardware_interface: "ur_hw", controller : "pose_pub"}
+      - {hardware_interface: "ft_hw", controller : "ft_pub", runtime_check: false}
+      
+  - name: cart_impedance
+    depends: [watch]
+    components:
+    - { hardware_interface: "ur_hw", controller : "cart_impedance_controller"}
+    hidden: false
+    
+  - name: ss_impedance
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "ss_impedance"}
+    hidden: true
+    
+  - name: lqr_impedance
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "lqr_impedance"}
+    hidden: true
+    
+  - name: lqr_cgt
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "lqr_cgt"}
+  
+  - name: gt_traj_arb
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "gt_traj_arb"}
+    
+  - name: cgt_impedance
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "cgt_impedance"}
+    hidden: true    
+    
+  - name: cgt_impedance_onedof
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "cgt_impedance_onedof"}
+    hidden: true
+    
+  - name: lqi_impedance
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "lqi_impedance"}
+    hidden: true
+    
+  - name: ioc_cgt
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "ioc_cgt"}
+    hidden: true
+    
+  - name: ekf_impedance
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "ekf_impedance"}
+    hidden: true
+
+  - name: ctrl
+    depends: [watch]
+    hidden: true
+    components:
+      - { hardware_interface: "ur_hw", controller : "p_j"}
+
+  - name: planner
+    depends: [ ctrl ]
+    components:
+    - {hardware_interface: "plan_hw", controller: "microint"}
+    
+  - name: planner_cimp
+    depends: [ cart_impedance ]
+    components:
+    - {hardware_interface: "plan_hw", controller: "microint"}
+    hidden: false
+    
+  - name: planner_ssimp
+    depends: [ ss_impedance ]
+    components:
+    - {hardware_interface: "plan_hw", controller: "microint"}
+    hidden: true
+    
+    
+    
+    
+    
+    
+configuration_dispatches:
+  - { name: watch,  at: 1.0 }
+  - { name: planner,  at: 2.0 }
