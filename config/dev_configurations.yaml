@@ -2,7 +2,7 @@ control_configurations:
   - name: watch
     components:
       - {hardware_interface: "ur_hw", controller : "js_pub"}
-      - {hardware_interface: "ur_hw", controller : "pose_pub"}
+      #- {hardware_interface: "ur_hw", controller : "pose_pub"}
       - {hardware_interface: "ft_hw", controller : "ft_pub", runtime_check: false}
       
   - name: gt_traj_arb
@@ -18,6 +18,11 @@ control_configurations:
 
   - name: planner
     depends: [ ctrl ]
+    components:
+    - {hardware_interface: "plan_hw", controller: "microint"}
+    
+  - name: arbitration_planner
+    depends: [ gt_traj_arb ]
     components:
     - {hardware_interface: "plan_hw", controller: "microint"}
     
@@ -40,8 +45,9 @@ control_configurations:
     
     
 configuration_dispatches:
-  #- { name: watch,  at: 1.0 }
-  #- { name: planner,  at: 2.0 }
-  - { name: fake_watch,  at: 1.0 }
-  - { name: fake_planner,  at: 2.0 }
+  - { name: watch,  at: 1.0 }
+  - { name: planner,  at: 2.0 }
+  
+  #- { name: fake_watch,  at: 1.0 }
+  #- { name: fake_planner,  at: 2.0 }
   

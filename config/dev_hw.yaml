@@ -45,6 +45,8 @@ ur_hw:
   robot_description_param: /robot_description
   robot_description_planning_param: /robot_description_planning
 
+  max_tracking_error: 1
+
   remap_source_args:
   - "/ur_hw/js_pub/joint_states"
   - "/ur_hw/pose_pub/cartesian_pose"
@@ -69,7 +71,7 @@ ur_hw:
     type: cnr/control/OpenLoopPositionController
     setpoint_topic_name: /joint_pos_target
     controlled_joints: all
-    kin_update_period : 0.008
+    kin_update_period : 0.1
     
     
   gt_traj_arb:
@@ -81,7 +83,7 @@ ur_hw:
     robot_tip_frame   : tip
     force_sensor_frame: robotiq_ft_frame_id
     
-    use_cartesian_reference: true
+    use_cartesian_reference: false
     joint_target_topic:     "/joint_pos_target"
     pose_target:            "/target_cart_pose"
     
@@ -91,26 +93,52 @@ ur_hw:
     omega_wrench: 500
     
     M_r: [10,10,10,10,10,10]
-    K_r: [0,0,100,5,5,5]
-    D_r: [50,50,50,10,10,10]
+    K_r: [0,0,0,20,20,20]
+    D_r: [100,100,100,10,10,10]
     damping_is_ratio: false
     
-    Qhh: [1,1,0.0001,0.0001]
-    Qhr: [0,0,0,0]
+    #M_r: [10,10,10,10,10,10]
+    #K_r: [200,200,200,20,20,20]
+    #D_r: [0.9,0.9,0.9,1,1,1]
+    #damping_is_ratio: true
     
-    Qrh: [0,0,0,0]
-    Qrr: [1,1,0.0001,0.0001]
+    #n_dofs: 2
     
-    Rh: [0.0005,0.0005]
-    Rr: [0.0005,0.0005]
+    #Qhh: [1,1,0.0001,0.0001]
+    #Qhr: [0,0,0,0]
     
-    control_type: 0
+    #Qrh: [0,0,0,0]
+    #Qrr: [1,1,0.0001,0.0001]
+    
+    #Rh: [0.0005,0.0005]
+    #Rr: [0.0005,0.0005]
+    
+    #mask: [1,1,0,0,0,0]
+    
+    n_dofs: 3
+    
+    Qhh: [1,1,1,0.0001,0.0001,0.0001]
+    Qhr: [0,0,0,0,0,0]
+    
+    Qrh: [0,0,0,0,0,0]
+    Qrr: [1,1,1,0.0001,0.0001,0.0001]
+    
+    Rh: [0.0005,0.0005,0.0005]
+    Rr: [0.00001,0.00001,0.00001]
     
     mask: [1,1,1,0,0,0]
+    robot_active: true
     
-    n_dofs: 2
+    alpha: 0.05
+    alpha_max: 0.98
+    alpha_min: 0.01
+    alpha_switch: 0.5
     
-    sigmoid_params: [5, 1, 0.98, 0.99] # [ width , half_x , height , max_y ]
+    base_control: "cgt"
+    #base_control: "lqr"
+    
+    #control_switch: "inverse_cgt"
+    control_switch: "lqr"
     
     
 #************************ FT Hw ******************************************
@@ -190,12 +218,18 @@ plan_hw:
   - "target_cart_twist"
   - "/current_pose"
 
-  microint:
+  microint__:
     type: "cnr/control/FollowJointTrajectoryPosVelEffController"
     controlled_joints: all
     interpolator: "thor/ThorPrefilter"
     regulator: "regulator/fake_regulator"
     spline_order: 1
+    
+  microint:
+    type: "cnr/control/ScaledFJTPosVelEffController"
+    controlled_joints: all
+    goal_tolerance: [0.005,0.005,0.005,0.005,0.005,0.005]
+    
 
   
 ########################################################################à
