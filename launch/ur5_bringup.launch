@@ -4,9 +4,7 @@
   <arg name="use_rviz" default="true" />
   <arg name="plot_traj" default="true" />
 
-  <rosparam command="load" file="$(find ur5_bringup)/config/gt_hw.yaml" />
-  <rosparam command="load" file="$(find ur5_bringup)/config/plan_hw.yaml" />
-  <rosparam command="load" file="$(find ur5_bringup)/config/ft_hw.yaml" />
+  <rosparam command="load" file="$(find ur5_bringup)/config/hw.yaml" />
 
   <include file="$(find ur5_moveit_lab)/launch/planning_context.launch" >
     <arg name="load_robot_description" value="true" />
@@ -55,11 +53,5 @@
     <arg name="rviz_config" value="$(find ur5_bringup)/config/moveit.rviz"/>
     <arg name="debug" value="$(arg debug)"/>
   </include>
-
-
-<!--     <node name="ft_sensor" pkg="robotiq_ft_sensor" type="rq_sensor" args="/dev/ttyUSB0" /> -->
-
-<!--    <include file="$(find traj_plotter)/launch/traj_plotter.launch" if="$(arg plot_traj)"/>-->
-
 
 </launch>

@@ -1,6 +1,5 @@
 ur_hw:
   type: cnr_ur_driver/UrCB3HardwareInterface
-#  type: ur_driver/HardwareInterface
   appenders: [file, screen]
   levels: [trace, info]
   pattern_layout: "[%5p][%d{HH:mm:ss,SSS}][%M:%L][%c] %m%n"
@@ -15,22 +14,14 @@ ur_hw:
   - wrist_2_joint
   - wrist_3_joint
 
-  joints:
-  - shoulder_pan_joint
-  - shoulder_lift_joint
-  - elbow_joint
-  - wrist_1_joint
-  - wrist_2_joint
-  - wrist_3_joint
-
   robot_ip: 192.168.254.30
   reverse_port: 50001
   script_sender_port: 50002
   tf_prefix: ''
   headless_mode: false
-  script_file:        /home/marie/cnr_ws/src/devices/robots/ur/Universal_Robots_ROS_Driver/ur_robot_driver/resources/ros_control.urscript
-  output_recipe_file: /home/marie/cnr_ws/src/devices/robots/ur/Universal_Robots_ROS_Driver/ur_robot_driver/resources/rtde_output_recipe.txt
-  input_recipe_file:  /home/marie/cnr_ws/src/devices/robots/ur/Universal_Robots_ROS_Driver/ur_robot_driver/resources/rtde_input_recipe.txt
+  script_file:        /resources/ros_control.urscript
+  output_recipe_file: /resources/rtde_output_recipe.txt
+  input_recipe_file:  /resources/rtde_input_recipe.txt
   ext_control_path: /programs/exc.urp
   use_tool_communication: false
   tool_voltage: 0
@@ -135,9 +126,6 @@ ur_hw:
     alpha_switch: 0.5
     
     base_control: "cgt"
-    #base_control: "lqr"
-    
-    #control_switch: "inverse_cgt"
     control_switch: "lqr"
     
     
