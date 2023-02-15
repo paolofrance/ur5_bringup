@@ -2,13 +2,28 @@ control_configurations:
   - name: watch
     components:
       - {hardware_interface: "ur_hw", controller : "js_pub"}
-      #- {hardware_interface: "ur_hw", controller : "pose_pub"}
       - {hardware_interface: "ft_hw", controller : "ft_pub", runtime_check: false}
       
   - name: gt_traj_arb
     depends: [ watch ]
     components:
-    - {hardware_interface: "ur_hw", controller: "gt_traj_arb"}
+      - {hardware_interface: "ur_hw", controller: "gt_traj_arb"}
+      #- {hardware_interface: "ur_hw", controller: "p_j"}
+      #- {hardware_interface: "plan_hw", controller: "gt_traj_arb"}
+
+  - name: drapebot_integration
+    depends: [ watch ]
+    components:
+    - {hardware_interface: "ur_hw", controller: "drapebot_integration"}
+    
+    
+  - name: dist_mpc
+    depends: [ watch ]
+    components:
+    #- {hardware_interface: "ur_hw", controller: "dist_mpc"}
+      - {hardware_interface: "ur_hw", controller: "p_j"}
+      - {hardware_interface: "plan_hw", controller: "dist_mpc"}
+    
     
   - name: ctrl
     depends: [watch]
@@ -25,6 +40,13 @@ control_configurations:
     depends: [ gt_traj_arb ]
     components:
     - {hardware_interface: "plan_hw", controller: "microint"}
+      
+  - name: drapebot_arbitration_planner
+    depends: [ drapebot_integration]
+    components:
+    - {hardware_interface: "plan_hw", controller: "microint"}
+
+
     
     
     
@@ -42,6 +64,11 @@ control_configurations:
     depends: [ fake_ctrl ]
     components:
     - {hardware_interface: "plan_hw", controller: "microint"}
+
+  - name: fake_gt_traj_arb
+    depends: [ fake_watch ]
+    components:
+    - {hardware_interface: "fake_hw", controller: "gt_traj_arb"}
     
     
 configuration_dispatches:
