@@ -1,5 +1,19 @@
 ur_hw:
+  
   type: cnr_ur_driver/UrCB3HardwareInterface
+  script_file:        /resources/ros_control.urscript
+  output_recipe_file: /resources/rtde_output_recipe.txt
+  input_recipe_file:  /resources/rtde_input_recipe.txt
+  ext_control_path:   /programs/exc.urp
+
+  #type: ur_driver/HardwareInterface  
+  #script_file:        /opt/ros/noetic/share/ur_client_library/resources/external_control.urscript
+  #output_recipe_file: /home/marie/wss/community_ws/src/devices/robots/ur/Universal_Robots_ROS_Driver/ur_robot_driver/resources/rtde_output_recipe.txt
+  #input_recipe_file:  /home/marie/wss/community_ws/src/devices/robots/ur/Universal_Robots_ROS_Driver/ur_robot_driver/resources/rtde_input_recipe.txt
+  #ext_control_path: /home/marie/wss/community_ws/src/devices/robots/ur/Universal_Robots_ROS_Driver/ur_robot_driver/programs/exc.urp
+  
+  
+  
   appenders: [file, screen]
   levels: [trace, info]
   pattern_layout: "[%5p][%d{HH:mm:ss,SSS}][%M:%L][%c] %m%n"
@@ -13,16 +27,20 @@ ur_hw:
   - wrist_1_joint
   - wrist_2_joint
   - wrist_3_joint
+  
+  joints:
+  - shoulder_pan_joint
+  - shoulder_lift_joint
+  - elbow_joint
+  - wrist_1_joint
+  - wrist_2_joint
+  - wrist_3_joint
 
   robot_ip: 192.168.254.30
   reverse_port: 50001
   script_sender_port: 50002
   tf_prefix: ''
   headless_mode: false
-  script_file:        /resources/ros_control.urscript
-  output_recipe_file: /resources/rtde_output_recipe.txt
-  input_recipe_file:  /resources/rtde_input_recipe.txt
-  ext_control_path: /programs/exc.urp
   use_tool_communication: false
   tool_voltage: 0
   tool_parity: 0
@@ -177,47 +195,69 @@ ur_hw:
     kin_update_period: 0.008
     
     robot_base_frame  : base_link
-    robot_tip_frame   : tip
-    force_sensor_frame: def_link
+    robot_tip_frame   : rotations_link
+    force_sensor_frame: robotiq_ft_frame_id
     
     use_cartesian_reference: false
     joint_target_topic:     "/joint_pos_target"
     pose_target:            "/target_cart_pose"
     
-    external_wrench_topic: "/deformation_estimation"
-    wrench_deadband: [0.02,0.02,0.02,0.05,0.05,0.05]
+    external_wrench_topic: "/robotiq_ft_wrench"
+    wrench_deadband: [.25,.25,1,1,1,1]
     use_filtered_wrench: true
     omega_wrench: 500
     
     ### for GT and MG
-    M_r: [10,10,10,10,10,10]
-    K_r: [0,0,0,20,20,20]
-    D_r: [100,100,100,10,10,10]
+    M_r: [10,10,10,.1,.1,.1]
+    K_r: [0,0,0,0,0,0]
+    D_r: [100,100,100,1,1,1]
     damping_is_ratio: false
     
-    n_dofs: 3
+    ### for calssical IC
+    #M_r: [10,10,10,10,10,10]
+    #K_r: [200,200,200,20,20,20]
+    #D_r: [0.9,0.9,0.9,1,1,1]
+    #damping_is_ratio: true
     
-    Qhh: [1,1,1,0.0001,0.0001,0.0001]
-    Qhr: [0,0,0,0,0,0]
+    #n_dofs: 3
     
-    Qrh: [0,0,0,0,0,0]
-    Qrr: [1,1,1,0.0001,0.0001,0.0001]
+    #Qhh: [1,1,1,0.0001,0.0001,0.0001]
+    #Qhr: [0,0,0,0,0,0]
     
-    Rh: [0.0005,0.0005,0.0005]
-    Rr: [0.00001,0.00001,0.00001]
+    #Qrh: [0,0,0,0,0,0]
+    #Qrr: [1,1,1,0.0001,0.0001,0.0001]
+    
+    #Rh: [0.0005,0.0005,0.0005]
+    #Rr: [0.0001,0.0001,0.0001]
+    
+    #mask: [1,1,1,0,0,1]
+    
+    
+    n_dofs: 6
+    
+    Qhh: [1,1,1,1,1,1,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001]
+    Qhr: [0,0,0,0,0,0,0,0,0,0,0,0]
+    
+    Qrh: [0,0,0,0,0,0,0,0,0,0,0,0]
+    Qrr: [1,1,1,1,1,1,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001]
+    
+    Rh: [0.0005,0.0005,0.0005,0.5,0.5,5]
+    Rr: [0.0001,0.0001,0.0001,0.1,0.1,1]
     
     mask: [1,1,1,0,0,1]
-    wrench_gains: [30,30,30,0,0,10]
     
     robot_active: true   # true for GT - false for MG and IC
     
-    alpha: 0.8
+    alpha: 0.1
     alpha_max: 0.98
     alpha_min: 0.01
     alpha_switch: 0.5
     
     base_control: "cgt"
     control_switch: "ncgt"
+    use_same_reference: false
+    use_robot_reference: false
+    use_human_reference: true
     
     
         
@@ -239,7 +279,8 @@ ur_hw:
     use_filtered_wrench: true
     omega_wrench: 500
     
-    horizon: 20
+    horizon: 5
+    control_sampling_time: 0.08
     
     M_r: [10,10,10,10,10,10]
     K_r: [0.1,0.1,0.1,20,20,20]
@@ -380,6 +421,7 @@ plan_hw:
     omega_wrench: 500
     
     horizon: 20
+    control_sampling_time: 0.008
     
     M_r: [10,10,10,10,10,10]
     K_r: [0.1,0.1,0.1,20,20,20]
@@ -412,7 +454,7 @@ plan_hw:
     kin_update_period: 0.008
     
     robot_base_frame  : base_link
-    robot_tip_frame   : tip
+    robot_tip_frame   : rotations_link
     force_sensor_frame: robotiq_ft_frame_id
     
     use_cartesian_reference: true
@@ -425,9 +467,9 @@ plan_hw:
     omega_wrench: 500
     
     ### for GT and MG
-    M_r: [10,10,10,10,10,10]
-    K_r: [0,0,0,20,20,20]
-    D_r: [100,100,100,10,10,10]
+    M_r: [10,10,10,.1,.1,.1]
+    K_r: [0,0,0,0,0,0]
+    D_r: [100,100,100,1,1,1]
     damping_is_ratio: false
     
     ### for calssical IC
@@ -451,18 +493,19 @@ plan_hw:
     #mask: [1,0,0,0,0,0]
     
     
-    n_dofs: 2
+    #n_dofs: 2
     
-    Qhh: [1,1,0.0001,0.0001]
-    Qhr: [0,0,0,0]
+    #Qhh: [1,1,0.0001,0.0001]
+    #Qhr: [0,0,0,0]
     
-    Qrh: [0,0,0,0]
-    Qrr: [1,1,0.0001,0.0001]
+    #Qrh: [0,0,0,0]
+    #Qrr: [1,1,0.0001,0.0001]
     
-    Rh: [0.0005,0.0005]
-    Rr: [0.0005,0.0005]
+    #Rh: [0.0005,0.0005]
+    #Rr: [0.0005,0.0005]
     
-    mask: [1,1,0,0,0,0]
+    #mask: [1,1,0,0,0,0]
+    
     
     #n_dofs: 3
     
@@ -475,16 +518,30 @@ plan_hw:
     #Rh: [0.0005,0.0005,0.0005]
     #Rr: [0.0001,0.0001,0.0001]
     
-    #mask: [1,1,1,0,0,0]
+    #mask: [1,1,1,0,0,1]
+    
+    
+    n_dofs: 6
+    
+    Qhh: [1,1,1,1,1,1,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001]
+    Qhr: [0,0,0,0,0,0,0,0,0,0,0,0]
+    
+    Qrh: [0,0,0,0,0,0,0,0,0,0,0,0]
+    Qrr: [1,1,1,1,1,1,0.0001,0.0001,0.0001,0.0001,0.0001,0.0001]
+    
+    Rh: [0.0005,0.0005,0.0005,0.5,0.5,5]
+    Rr: [0.0001,0.0001,0.0001,0.1,0.1,1]
+    
+    mask: [1,1,1,0,0,1]
     
     
     
     robot_active: true   # true for GT - false for MG and IC
     
-    alpha: 0.51
+    alpha: 0.5
     alpha_max: 0.98
     alpha_min: 0.01
-    alpha_switch: 0.5
+    alpha_switch: 0.1
     
     base_control: "cgt"
     control_switch: "ncgt"

@@ -7,9 +7,9 @@ control_configurations:
   - name: gt_traj_arb
     depends: [ watch ]
     components:
-      - {hardware_interface: "ur_hw", controller: "gt_traj_arb"}
-      #- {hardware_interface: "ur_hw", controller: "p_j"}
-      #- {hardware_interface: "plan_hw", controller: "gt_traj_arb"}
+      #- {hardware_interface: "ur_hw", controller: "gt_traj_arb"}
+      - {hardware_interface: "ur_hw", controller: "p_j"}
+      - {hardware_interface: "plan_hw", controller: "gt_traj_arb"}
 
   - name: drapebot_integration
     depends: [ watch ]
@@ -20,9 +20,9 @@ control_configurations:
   - name: dist_mpc
     depends: [ watch ]
     components:
-    #- {hardware_interface: "ur_hw", controller: "dist_mpc"}
-      - {hardware_interface: "ur_hw", controller: "p_j"}
-      - {hardware_interface: "plan_hw", controller: "dist_mpc"}
+    - {hardware_interface: "ur_hw", controller: "dist_mpc"}
+      #- {hardware_interface: "ur_hw", controller: "p_j"}
+      #- {hardware_interface: "plan_hw", controller: "dist_mpc"}
     
     
   - name: ctrl
